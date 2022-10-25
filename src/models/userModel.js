@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); // importing mongoose library
 
 /**const userSchema = new mongoose.Schema({
     firstName: String,
@@ -24,7 +24,7 @@ const mongoose = require('mongoose');
 }, { timestamps: true });
 */
 
-const bookSchema = new mongoose.Schema({
+const bookSchema = new mongoose.Schema({ // here i am creating schema 
     bookName: String,
     authorName: String,
     category: String,
@@ -34,7 +34,7 @@ const bookSchema = new mongoose.Schema({
 
 
 //module.exports = mongoose.model('User', userSchema) //users
-module.exports = mongoose.model('ABC', bookSchema) //users
+module.exports = mongoose.model('ABC', bookSchema) // we export user schema, create model from userscema and export it 
 
 
 
