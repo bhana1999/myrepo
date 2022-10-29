@@ -15,7 +15,6 @@ const getBooksData= async function (req, res) {
 const getBooksWithAuthorDetails = async function (req, res) {
     let specificBook = await bookModel.find().populate('author_id')
     res.send({data: specificBook})
-
 }
 
 module.exports.createBook= createBook
