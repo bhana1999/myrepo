@@ -9,7 +9,7 @@ const createauthor = async function (req,res){
         let data = req.body;
         let newdata = await authormodel.create(data);
     
-        res.status(201).send ({msg: newdata})
+       return res.status(201).send ({msg: newdata})
     } 
     catch (error) {
         res.status(500).send({msg:error.message})
@@ -35,14 +35,16 @@ try {
 
     res.setHeader("x-api-key",token)
 
-    res.status(200).send({statu : true, token : token })
+  return  res.status(200).send({statu : true, token : token })
 
 } catch (error) {
 
-    res.status(500).send(error.message)
+   return res.status(500).send(error.message)
 }
 
 }
+
+
     
 module.exports = {createauthor,loginauthor}
 

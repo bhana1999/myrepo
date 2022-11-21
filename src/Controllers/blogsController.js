@@ -1,3 +1,4 @@
+
 const blogsModel = require("../Models/blogsModel");
 const blogsmodel = require("../Models/blogsModel")
 
@@ -13,7 +14,7 @@ try {
     return res.status(201).send({status: true , msg: blog})
 
     } catch (error) {
-        res.status(500).send({ msg: error.message })
+        return res.status(500).send({ msg: error.message })
     }
 }
 
@@ -28,15 +29,15 @@ const getblogs = async function (req,res){
 
         let filtered = await blogsmodel.find(data).populate("authorid")
 
-        console.log(filtered);
+        //console.log(filtered);
 
         if (filtered){
-        return res.status(200).send ({msg: filtered})
+        return res.status(200).send({msg: filtered})
 
-        }else res.status(404).send ("data not found") 
+        }else return res.status(404).send ("data not found") 
         
     } catch (error) {
-        res.status(500).send({ msg: error.message })
+       return res.status(500).send({ msg: error.message })
     }
 }
 
@@ -71,7 +72,7 @@ const updatedblogs = async function (req, res) {
         return res.status(200).send({ status: true, msg: updatedblogs });
         
     } catch (err) {
-        res.status(500).send({ status: false, msg: err.message })
+       return res.status(500).send({ status: false, msg: err.message })
     }
 }
 
@@ -103,7 +104,7 @@ const deleted = async function (req,res){
         return res.status(200).send({status:true,Msg: "deleted succesfully"})
         
     } catch (err) {
-        res.status(500).send({ status: false, msg: err.message })
+         return res.status(500).send({ status: false, msg: err.message })
     }
 }
 
@@ -136,7 +137,7 @@ try {
     res.status(200).send({status: true,deleteData});
 
     } catch (error) {
-      res.status(500).send({ status: false, msg: error.message });
+      return res.status(500).send({ status: false, msg: error.message });
     }
   };
 
