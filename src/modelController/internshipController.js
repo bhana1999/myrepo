@@ -6,6 +6,7 @@ const Validation = require("../Validation/Validation")
 //__________________________ Post Api : Create Intern  ___________________________________________
 
 const createIntern = async function (req, res) {
+  res.setHeader('Access-Control-Allow-Origin','*')
   try {
     const data = req.body
     if (Object.keys(data) == 0) {
