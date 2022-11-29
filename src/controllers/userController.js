@@ -14,7 +14,12 @@ const createuser = async function (req, res) {
     }
     const { title, name, phone, email, password, } = req.body
     if (!title) { res.status(400).send({ status: false, message: "title is missing" }) }
+    if(!["Mr","Mrs","Miss"].includes(title)){ res.status(400).send({ status: false, message: "invalid title" })}
+
     if (!name) { res.status(400).send({ status: false, message: "name is missing" }) }
+    if (!validators.isvalidName(name)) {
+      return res.status(400).send({ status: false, message: "Invalid name" })
+    }
     if (!phone) { res.status(400).send({ status: false, message: "phone is missing" }) }
     if (!validators.isvalidMobileNumber(phone)) {
       return res.status(400).send({ status: false, message: "Invalid phone number" })
@@ -45,9 +50,11 @@ const createuser = async function (req, res) {
 const loginuser = async function (req, res) {
 
   try {
-
-    let email = req.body.email
-    let password = req.body.password
+     
+    let data = req.body
+    let email = data.email
+    let password = data.password
+    
     if (Object.keys(data) == 0) {
       return res
         .status(400)
@@ -62,7 +69,9 @@ const loginuser = async function (req, res) {
       return res.status(400).send({ status: false, message: "Invalid password" })
     }
     let userdata = await userModel.findOne({ email: email }, { password: password })
+    if(!userdata){return res.status(404).send({ status: false, message: "user not found" })}
     let token = jwt.sign({ userid: userdata._id.toString() }, "lithiumproject3", { expiresIn: "1h" });
+    
 
     res.setHeader("x-api-key", token)
 
