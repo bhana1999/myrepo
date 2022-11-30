@@ -26,7 +26,8 @@ const reviewSchema = new mongoose.Schema({
     review: String,
     isDeleted: {
         type :Boolean,
-        required:true
+        default:false
+
     },
 },
  { timestamps: true }

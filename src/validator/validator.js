@@ -21,7 +21,7 @@ const isvaliduserId = function (userId) {
   };
 
   const isvalidName = function (name) {
-    const nameRegex = /^[a-zA-Z][a-zA-Z]*$/;
+    const nameRegex = /^[a-zA-Z ][a-zA-Z ]*$/;
     return nameRegex.test(name);
   };
 
@@ -45,7 +45,15 @@ const isvaliduserId = function (userId) {
     return regex.test(value)
   }
   
-
+  const isvalidRating = function(value){
+    const regex = /^\*{1,5}$/
+    return regex.test(value)
+  }
+  
+  const isvalidReview = function(value){
+    const regex = /^(?:[\w:\-(),. ]+)$/
+    return regex.test(value)
+  }
   
   
 
@@ -59,5 +67,7 @@ module.exports = {
     isValidBooktitle,
     isvalidDate,
     isvalidISBN,
-    isvalidEmpty
+    isvalidEmpty,
+    isvalidRating,
+    isvalidReview
 };
