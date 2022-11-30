@@ -51,7 +51,7 @@ const isvaliduserId = function (userId) {
   }
   
   const isvalidReview = function(value){
-    const regex = /^(?:[\w:\-(),. ]+)$/
+    const regex = /^(?:[\w:\-(),.! ]+)$/
     return regex.test(value)
   }
   

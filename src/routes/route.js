@@ -4,7 +4,7 @@ const router = express.Router()
 const userController = require("../controllers/userController")
 const bookController = require("../controllers/bookController")
 const routController = require("../controllers/reviewController")
-const{authentication}=require("../middilware/middilware")
+const{authentication,Authorization}=require("../middilware/middilware")
 
 
 
@@ -20,15 +20,15 @@ router.get("/books",authentication,bookController.getBooks)
 
 router.get("/books/:bookId",authentication,bookController.getBookById)
 
-router.delete("/books/:bookId",authentication,bookController.deleteBooks)
+router.delete("/books/:bookId",authentication,Authorization,bookController.deleteBooks)
 
-router.put("/books/:bookId",authentication,bookController.UpdateBooks)
+router.put("/books/:bookId",authentication,Authorization,bookController.UpdateBooks)
 
 router.post("/books/:bookId/review",routController.createReview)
 
 router.put("/books/:bookId/review/:reviewId",routController.updateReview)
 
-router.delete(" /books/:bookId/review/:reviewId",routController.deleteReview)
+router.delete("/books/:bookId/review/:reviewId",routController.deleteReview)
 
 
 
