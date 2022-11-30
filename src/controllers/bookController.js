@@ -73,7 +73,7 @@ const getBookById = async function (req, res) {
         }
         //let reviewer= await reviewModel.find
 
-        res.status(200).send({ status: true, message: 'Book List', data: bookData })
+        res.status(201).send({ status: true, message: 'Book List', data: bookData })
 
     } catch (err) {
         res.status(500).send({ status: false, message: err.message })

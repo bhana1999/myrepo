@@ -23,7 +23,8 @@ const mongoose = require("mongoose")
       password: {
         type:String,
          required:true, 
-        // minLen 8, maxLen 15,
+        minLen:8,
+        maxLen:15
         },
       address: {
         street: {type:String,required:true},
