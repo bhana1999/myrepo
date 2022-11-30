@@ -5,7 +5,7 @@ const moment =require("moment")
 const reviewSchema = new mongoose.Schema({
 
     bookId : {
-        type :String,
+        type :ObjectId,
         required: true,
         ref : "book"
     },
