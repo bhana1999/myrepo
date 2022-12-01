@@ -43,7 +43,7 @@ const Authorization = async function (req,res,next){
 
         if(!book){res.status(404).send({status:false,msg:"book does not exit"})}
 
-        if(book.userId.toString() != userLoggedIn) return res.status(401).send({status: false, msg: 'User logged is not allowed to create or modify  book data'})
+        if(book.userId.toString() != userLoggedIn) return res.status(403).send({status: false, message: 'User logged is not allowed to create/delete/modify this book data'})
         
         }
     }catch(err){

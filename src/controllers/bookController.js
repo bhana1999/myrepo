@@ -127,27 +127,29 @@ const UpdateBooks = async function (req, res) {
         // if(!Bookcheck){return res.status(404).send({status: false , msg: "No books found"})}
 
         var data = req.body
+        
 
 
         // console.log(data)
         // validator.isValidBooktitle()
         let arr = Object.keys(data)
-        if (arr.length == 0) { return res.status(400).send({ status: false, msg: "empty body" }) }
+        if (arr.length == 0) { return res.status(400).send({ status: false, message: "empty body" }) }
         for (i of arr) {
 
 
             if (i == "releasedAt") {
-                if (!validator.isvalidDate(data[i])) { return res.status(400).send({ status: false, message: "invalid releasedAt" }) }
+                if (!validators.isvalidDate(data[i])) { return res.status(400).send({ status: false, message: "invalid releasedAt" }) }
             }
             if (i == "ISBN") {
-                if (!validator.isvalidISBN(data[i])) { return res.status(400).send({ status: false, message: "invalid ISBN" }) }
+                if (!validators.isvalidISBN(data[i])) { return res.status(400).send({ status: false, message: "invalid ISBN" }) }
             }
 
             if (i == "title" || i == "excerpt") {
 
-
-                if (validator.isvalidEmpty(data[i])) { return res.status(400).send({ status: false, message: `invalid ${i}` }) }
+                if(!validators.isValidBooktitle(data[i])){return res.status(400).send({ status: false, message: `invalid ${i}` })}
+                if (validators.isvalidEmpty(data[i])) { return res.status(400).send({ status: false, message: `invalid ${i}` }) }
             }
+            if(data[i]=="") {return res.status(400).send({ status: false, message: `empty string at ${i}` })}
         }
 
 
@@ -175,19 +177,19 @@ const deleteBooks = async function (req, res) {
 
         let bookId = req.params.bookId
 
-        if (!bookId) return res.status(400).send({ status: false, msg: "BookId is required." })
+        if (!bookId) return res.status(400).send({ status: false, message: "BookId is required." })
 
         let isValidBookId = isValidObjectId(bookId)
 
-        if (!isValidBookId) return res.status(400).send({ status: false, msg: "BookId is not a valid ObjectId." })
+        if (!isValidBookId) return res.status(400).send({ status: false, message: "BookId is not a valid ObjectId." })
 
-        let isAvailable = await BookModel.findById(bookId)
+        // let isAvailable = await BookModel.findById(bookId)
 
-        if (!isAvailable) return res.status(404).send({ status: false, msg: "Book is not available." })
+        // if (!isAvailable) return res.status(404).send({ status: false, msg: "Book is not available." })
 
-        if (isAvailable.isDeleted === true) return res.status(404).send({ status: false, msg: "Book is already deleted." })
+        // if (isAvailable.isDeleted === true) return res.status(404).send({ status: false, msg: "Book is already deleted." })
 
-        let deletedBook = await BookModel.findOneAndUpdate({ _id: bookId, isDeleted: false })
+        let deletedBook = await BookModel.findOneAndUpdate({ _id: bookId, isDeleted: false },{isDeleted:true},{new:true})
 
         res.status(200).send({ status: true, data: deletedBook })
 

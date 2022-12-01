@@ -20,7 +20,7 @@ const createReview = async function(req,res){
      if(!isValidObjectId(bId)) return res.status(400).send ({status:false,massage:"bookId is not a valid ObjectId"})
   
      
-     if(!reviewedBy) return res.status(400).send ({status:false,message:"reviewedBy is required"})
+    
      if(validators.isvalidEmpty(reviewedBy))  return res.status(400).send ({status:false,message:"reviewedBy is emptystring"})
      if(!validators.isvalidName(reviewedBy)) return res.status(400).send ({status:false,message:"please provide a validName in reviewedBy"})
      
@@ -68,12 +68,15 @@ try{
 
     for(i of arr){
         if(i=="rating"){
-            if(typeof (data[i])!="number"||data[i]<1||data[i]>5) return res.status(400).send({status:false,message:`invalid ${i} format`})
+            // if(validators.isvalidEmpty(data[i]))  return res.status(400).send ({status:false,message:"review is emptystring"})
+            if(typeof (data[i])!="number"||data[i]<1||data[i]>5) return res.status(400).send({status:false,message:`invalid ${i} format`}) 
         }
         if(i=="review"){
-        if(!validators.isvalidReview(data[i])) return res.status(400).send({status:false,message:`invalid ${i} ratingmat`})
+        if(validators.isvalidEmpty(data[i]))  return res.status(400).send ({status:false,message:"review is emptystring"})
+        if(!validators.isvalidReview(data[i])) return res.status(400).send({status:false,message:`invalid ${i} format`})
         }
         if(i=="reviewedBy"){
+        if(validators.isvalidEmpty(data[i]))  return res.status(400).send ({status:false,message:"reviewedBy is emptystring"})
         if(!validators.isvalidName(data[i])) return res.status(400).send({status:false,message:`invalid ${i} format`})
         }
     }
@@ -81,12 +84,11 @@ try{
     let book = await bookModel.findOne({_id:bId,isDeleted:false}).lean()
     if(!book) return res.status(404).send({status:false,message:"no books found"})
 
-    let review =  await reviewModel.findOneAndUpdate({_id:rId,isDeleted:false},data)
+    let review =  await reviewModel.findOneAndUpdate({_id:rId,bookId:bId,isDeleted:false},data,{new:true})
     if(!review) return res.status(404).send({status:false,message:"no review found"})
 
-    let reviewsData = await reviewModel.find({bookId:bId}).select({createdAt:0,updatedAt:0,isDeleted:0,__v:0})
-
-    book.reviewsData=reviewsData
+    
+    book.reviewsData=review
 
     res.status(200).send({status:true,message:"Book List",data:book})
 }catch(error){

@@ -17,6 +17,7 @@ const createuser = async function (req, res) {
     if(!["Mr","Mrs","Miss"].includes(title)){ res.status(400).send({ status: false, message: "invalid title" })}
 
     if (!name) { res.status(400).send({ status: false, message: "name is missing" }) }
+    if (validators.isvalidEmpty(name)) {res.status(400).send({status:false,message:"empty name string"})}
     if (!validators.isvalidName(name)) {
       return res.status(400).send({ status: false, message: "Invalid name" })
     }
@@ -60,15 +61,15 @@ const loginuser = async function (req, res) {
         .status(400)
         .send({ status: false, message: "No input provided" });
     }
-    if (!email) { res.status(400).send({ status: false, message: "email is missing" }) }
+    if (!email) { return res.status(400).send({ status: false, message: "email is missing" }) }
     if (!validators.isvalidEmail(email)) {
       return res.status(400).send({ status: false, message: "Invalid email" })
     }
-    if (!password) { res.status(400).send({ status: false, message: "password is missing" }) }
+    if (!password) {  return res.status(400).send({ status: false, message: "password is missing" }) }
     if (!validators.isvalidpassword(password)) {
       return res.status(400).send({ status: false, message: "Invalid password" })
     }
-    let userdata = await userModel.findOne({ email: email }, { password: password })
+    let userdata = await userModel.findOne({ email: email,password: password })
     if(!userdata){return res.status(404).send({ status: false, message: "user not found" })}
     let token = jwt.sign({ userid: userdata._id.toString() }, "lithiumproject3", { expiresIn: "1h" });
     

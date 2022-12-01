@@ -12,7 +12,7 @@ const isvalidMobileNumber = function (phone) {
 };
 
 const isvalidEmail = function (email) {
-    const emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[com]+)*$/;
+    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     return emailRegex.test(email);
 };
 
