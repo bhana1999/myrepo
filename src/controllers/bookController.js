@@ -132,7 +132,6 @@ const UpdateBooks = async function (req, res) {
             if (i == "ISBN") {
                 if (!validators.isvalidISBN(data[i])) { return res.status(400).send({ status: false, message: "invalid ISBN" }) }
             }
-
             if (i == "title" || i == "excerpt") {
 
                 if (!validators.isValidBooktitle(data[i])) { return res.status(400).send({ status: false, message: `invalid ${i}` }) }
@@ -145,30 +144,23 @@ const UpdateBooks = async function (req, res) {
         const { title, ISBN } = data
         const Pb = await BookModel.findOne({ $or: [{ title:title }, {  ISBN:ISBN }] })
         if (Pb) { return res.status(400).send({ status: false, message: "Book already exists" }) }
-        console.log(Pb)
-
+    
         const tosend = await BookModel.findOneAndUpdate({ _id: id, isDeleted: false }, data, { new: true })
         if (!tosend) { return res.status(404).send({ status: false, msg: "No books found" }) }
         return res.status(200).send({ status: true, data: tosend })
 
     } catch (error) {
         res.status(500).send({ status: false, message: error.message })
-
     }
 }
 
 const deleteBooks = async function (req, res) {
-
     try {
-
         let bookId = req.params.bookId
 
         if (!bookId) return res.status(400).send({ status: false, message: "BookId is required." })
-
         let isValidBookId = isValidObjectId(bookId)
-
         if (!isValidBookId) return res.status(400).send({ status: false, message: "BookId is not a valid ObjectId." })
-
         let deletedBook = await BookModel.findOneAndUpdate({ _id: bookId, isDeleted: false }, { isDeleted: true }, { new: true })
         if (!deletedBook) return res.status(404).send({ status: false, message: "book you are trying to access is unavailable OR already deleted" })
 

@@ -69,9 +69,7 @@ const loginuser = async function (req, res) {
     if(!userdata){return res.status(404).send({ status: false, message: "user not found" })}
     let token = jwt.sign({ userid: userdata._id.toString() }, "lithiumproject3", { expiresIn: "1h" });
     
-
     res.setHeader("x-api-key", token)
-
     res.status(200).send({ status: true, token: token })
 
   } catch (error) {

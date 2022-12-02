@@ -26,21 +26,15 @@ const authentication=async function(req,res,next){
 const Authorization = async function (req,res,next){
     try{
 
-        
          let userLoggedIn = req.token.userid
-        //  console.log(userLoggedIn)
-
+       
         let bookid = req.params.bookId
 
-        
          let isvalid = isValidObjectId(bookid)
 
-        
         if (isvalid){
-
         let book = await bookModel.findById(bookid)
         // console.log(book)
-
         if(!book){res.status(404).send({status:false,msg:"book does not exit"})}
 
         if(book.userId.toString() != userLoggedIn) return res.status(403).send({status: false, message: 'User logged is not allowed to create/delete/modify this book data'})
