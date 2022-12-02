@@ -118,13 +118,11 @@ const deleteReview = async function(req, res){
 
         const checkbookIdExist = await bookModel.findById({ _id: bookId })
         if (!checkbookIdExist) {
-            return res.status(400).send({ status: false, message: "book you are searching does not exist" })
+            return res.status(404).send({ status: false, message: "book you are searching does not exist" })
         }
-
         if (checkbookIdExist.isDeleted == true) {
-            return res.status(400).send({ status: false, message: "book is already deleted" })
+            return res.status(404).send({ status: false, message: "book is already deleted" })
         }
-
 
         const checkReviewIdExist = await reviewModel.findById({ _id: reviewId })
         if (!checkReviewIdExist) {
@@ -155,12 +153,9 @@ const deleteReview = async function(req, res){
            {new : true}
        )
 
-       return res.status(200).send({status : true, message : "review deleted", data:decreaseReviewValue })
+       return res.status(200).send({status : true, message : "review deleted" })
 
-       
-        
-
-    }catch(err){
+     }catch(err){
         return res.status(500).send({status :false, message : err.message})
     }
 }
