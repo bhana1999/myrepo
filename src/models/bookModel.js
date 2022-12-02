@@ -8,31 +8,37 @@ const bookSchema = new mongoose.Schema({
         type:String,
         trim:true,
         required:true,
-        unique:true
+        unique:true,
+        trim:true
     },
     excerpt:{
         type:String,
-        required:true,    
+        required:true,
+        trim:true    
     },
     userId:{
         type:ObjectId,
         trim:true,
         required:true,
+        trim:true,
         ref:'User'
     },
     ISBN:{
         type:String,
         required:true,
-        unique:true
+        unique:true,
+       
     },
     category:{
         type:String,
         required:true,
+        trim:true
         
     },
     subcategory:{
         type:String,
-        required:true
+        required:true,
+        trim:true
     },
     review:{
         type:Number,

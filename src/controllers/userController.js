@@ -8,34 +8,32 @@ const createuser = async function (req, res) {
   try {
     const data = req.body
     if (Object.keys(data) == 0) {
-      return res
-        .status(400)
-        .send({ status: false, message: "No input provided" });
+      return res.status(400).send({ status: false, message: "No input provided" });
     }
     const { title, name, phone, email, password, } = req.body
-    if (!title) { res.status(400).send({ status: false, message: "title is missing" }) }
-    if(!["Mr","Mrs","Miss"].includes(title)){ res.status(400).send({ status: false, message: "invalid title" })}
+    if (!title) {return res.status(400).send({ status: false, message: "title is missing" }) }
+    if(!["Mr","Mrs","Miss"].includes(title)){ return res.status(400).send({ status: false, message: "invalid title" })}
 
-    if (!name) { res.status(400).send({ status: false, message: "name is missing" }) }
-    if (validators.isvalidEmpty(name)) {res.status(400).send({status:false,message:"empty name string"})}
+    if (!name) { return res.status(400).send({ status: false, message: "name is missing" }) }
+    if (validators.isvalidEmpty(name)) {return res.status(400).send({status:false,message:"empty name string"})}
     if (!validators.isvalidName(name)) {
       return res.status(400).send({ status: false, message: "Invalid name" })
     }
-    if (!phone) { res.status(400).send({ status: false, message: "phone is missing" }) }
+    if (!phone) { return res.status(400).send({ status: false, message: "phone is missing" }) }
     if (!validators.isvalidMobileNumber(phone)) {
       return res.status(400).send({ status: false, message: "Invalid phone number" })
     }
     const find1 = await userModel.findOne({ phone: phone })
-    if (find1) { res.status(400).send({ status: false, message: "phone number already exists" }) }
+    if (find1) { return res.status(400).send({ status: false, message: "phone number already exists" }) }
 
-    if (!email) { res.status(400).send({ status: false, message: "email is missing" }) }
+    if (!email) {return res.status(400).send({ status: false, message: "email is missing" }) }
     if (!validators.isvalidEmail(email)) {
       return res.status(400).send({ status: false, message: "Invalid email" })
     }
     const find2 = await userModel.findOne({ email: email })
-    if (find2) { res.status(400).send({ status: false, message: "email already exists" }) }
+    if (find2) {return res.status(400).send({ status: false, message: "email already exists" }) }
 
-    if (!password) { res.status(400).send({ status: false, message: "password is missing" }) }
+    if (!password) {return res.status(400).send({ status: false, message: "password is missing" }) }
     if (!validators.isvalidpassword(password)) {
       return res.status(400).send({ status: false, message: "Invalid password" })
     }
@@ -53,13 +51,11 @@ const loginuser = async function (req, res) {
   try {
      
     let data = req.body
-    let email = data.email
-    let password = data.password
+
+    let{email,password} = data
     
     if (Object.keys(data) == 0) {
-      return res
-        .status(400)
-        .send({ status: false, message: "No input provided" });
+      return res.status(400).send({ status: false, message: "No input provided" });
     }
     if (!email) { return res.status(400).send({ status: false, message: "email is missing" }) }
     if (!validators.isvalidEmail(email)) {
@@ -86,5 +82,7 @@ const loginuser = async function (req, res) {
 }
 
 module.exports = { loginuser, createuser }
+
+
 
 

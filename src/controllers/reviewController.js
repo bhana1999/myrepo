@@ -12,7 +12,7 @@ const createReview = async function(req,res){
     let {reviewedBy,rating,review} = data
     
     let bId = req.params.bookId
-    data.bookId=bId
+    data.bookId=bId  //bookId key m bid save kra rhe h bna rhe h
     data.isDeleted
     data.reviewedAt=Date.now()
     
@@ -42,7 +42,7 @@ const createReview = async function(req,res){
      const savedData = await reviewModel.create(data)
      let reviewsData = await reviewModel.find({bookId:bId,isDeleted:false}).select({createdAt:0,updatedAt:0,isDeleted:0,__v:0})
      
-     book.reviewsData=reviewsData
+     book.reviewsData=reviewsData    //book variable m ek reviewData key bna rhe h jisme jo 43 m object mil rha usko store kr rhe h 
  
      res.status(200).send({status:true,message:"Book List",data:book})
   
@@ -68,7 +68,7 @@ try{
 
     for(i of arr){
         if(i=="rating"){
-            // if(validators.isvalidEmpty(data[i]))  return res.status(400).send ({status:false,message:"review is emptystring"})
+           
             if(typeof (data[i])!="number"||data[i]<1||data[i]>5) return res.status(400).send({status:false,message:`invalid ${i} format`}) 
         }
         if(i=="review"){
@@ -151,7 +151,7 @@ const deleteReview = async function(req, res){
 
        const decreaseReviewValue = await bookModel.findOneAndUpdate(
            {_id : bookId},
-           {$inc : {reviews : -1}},
+           {$inc : {review : -1}},
            {new : true}
        )
 

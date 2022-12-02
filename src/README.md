@@ -55,6 +55,7 @@ POST /login
 Allow an user to login with their email and password.
 On a successful login attempt return a JWT token contatining the userId, exp, iat. The response should be a JSON object like this
 If the credentials are incorrect return a suitable error message with a valid HTTP status code. The response should be a JSON object like this
+
 Books API
 POST /books
 Create a book document from request body. Get userId in request body only.
@@ -62,6 +63,7 @@ Make sure the userId is a valid userId by checking the user exist in the users c
 Return HTTP status 201 on a succesful book creation. Also return the book document. The response should be a JSON object like this
 Create atleast 10 books for each user
 Return HTTP status 400 for an invalid request with a response body like this
+
 GET /books
 Returns all books in the collection that aren't deleted. Return only book _id, title, excerpt, userId, category, releasedAt, reviews field. Response example here
 Return the HTTP status 200 if any documents are found. The response structure should be like this

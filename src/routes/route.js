@@ -20,9 +20,9 @@ router.get("/books",authentication,bookController.getBooks)
 
 router.get("/books/:bookId",authentication,bookController.getBookById)
 
-router.delete("/books/:bookId",authentication,Authorization,bookController.deleteBooks)
-
 router.put("/books/:bookId",authentication,Authorization,bookController.UpdateBooks)
+
+router.delete("/books/:bookId",authentication,Authorization,bookController.deleteBooks)
 
 router.post("/books/:bookId/review",routController.createReview)
 
