@@ -4,6 +4,7 @@ const validators = require('../validator/validator')
 const { isValidObjectId } = require("mongoose")
 const reviewModel = require("../models/reviewModel")
 const userModel = require("../models/userModel")
+const bookModel = require("../models/bookModel")
 
 
 //------------------------------createBook------------------------------------------------//
@@ -17,7 +18,7 @@ const createBooks = async function (req, res) {
         if (validators.isvalidEmpty(title)) return res.status(400).send({ status: false, message: "title is emptystring" })
         if (!validators.isValidBooktitle(title)) { return res.status(400).send({ status: false, message: "invalid title" }) }
 
-        if (!excerpt) return res.status(400).send({ status: false, message: "excerptis required" })
+        if (!excerpt) return res.status(400).send({ status: false, message: "excerpt is required" })
         if (validators.isvalidEmpty(excerpt)) return res.status(400).send({ status: false, message: "excerpt is emptystring" })
         if (!validators.isvalidReview(excerpt)) return res.status(400).send({ status: false, message: "excerpt is in inavlid format" })
 
@@ -65,7 +66,7 @@ const getBooks = async function (req, res) {
     for (i of arr) {
 
         if (i == "userId") {
-            if (!isValidObjectId(data[i])) { return res.status(400).send({ status: false, message: "invalid releasedAt" }) }
+            if (!isValidObjectId(data[i])) { return res.status(400).send({ status: false, message: "invalid userId" }) }
         }
 
         if (i == "category" || i == "subcategory") {
@@ -170,6 +171,9 @@ const deleteBooks = async function (req, res) {
         res.status(500).send({ status: false, msg: err.message })
     }
 }
+
+
+
 
 module.exports = { createBooks, getBooks, deleteBooks, UpdateBooks, getBookById }
 

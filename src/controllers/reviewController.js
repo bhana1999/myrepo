@@ -35,7 +35,7 @@ const createReview = async function(req,res){
      const savedData = await reviewModel.create(data)
      let reviewsData = await reviewModel.find({bookId:bId,isDeleted:false}).select({createdAt:0,updatedAt:0,isDeleted:0,__v:0})
      
-     book.reviewsData=reviewsData    //book variable m ek reviewData key bna rhe h jisme jo 43 m object mil rha usko store kr rhe h 
+     book.reviewsData=reviewsData    //book variable m ek reviewData key bna rhe h jisme jo 33 m object mil rha usko store kr rhe h 
  
      res.status(200).send({status:true,message:"Book List",data:book})
   
@@ -105,7 +105,7 @@ const deleteReview = async function(req, res){
             return res.status(400).send({ status: false, message: "book id is not valid" })
         }
         if (!isValidObjectId(reviewId)) {
-            return res.status(400).send({ status: false, message: "review id is not in valid " })
+            return res.status(400).send({ status: false, message: "review id is not  valid " })
         }
         const checkbookIdExist = await bookModel.findById({ _id: bookId })
         if (!checkbookIdExist) {
