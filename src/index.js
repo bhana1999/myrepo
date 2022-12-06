@@ -1,13 +1,14 @@
 const express = require("express")
 const{default:mongoose} = require("mongoose")
 const port = 3000
-// const multer = require("multer")
+const multer = require("multer")
 const app = express()
+// const aws = require("aws-sdk")
 const route = require("./routes/route")
 
 app.use(express.json()) //express has inbuilt function to parse data.
 
-// app.use(multer().any())
+app.use(multer().any())
 
 mongoose.connect("mongodb+srv://AbhinavSIngh:9936522959@cluster0.wtmx5b4.mongodb.net/group6Database", { useNewUrlParser: true })
 
