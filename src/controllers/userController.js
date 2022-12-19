@@ -1,5 +1,6 @@
 const userModel = require("../model/userModel")
 const bcrypt = require('bcrypt')
+const jwt = require("jsonwebtoken");
 const { isValidName, isValidEmail, isValidObjectId, isValidString, isValidPhone, isValidPassword, isValidPincode } = require('../validation/validator')
 const { getImage } = require("../aws/aws")
 
@@ -9,9 +10,8 @@ const createUser = async function (req, res) {
         let { fname, lname, email, profileImage, phone, password, address } = data
         let files = req.files
         address = JSON.parse(address)
-    
-        if(!files)
-        {
+
+        if (!files) {
             return res.status(400).send({ status: false, message: "Please provide Profile Image" })
         }
         data.profileImage = await getImage(files)
@@ -22,13 +22,13 @@ const createUser = async function (req, res) {
         if (!fname) {
             return res.status(400).send({ status: false, message: "Please provide First Name" })
         }
-        if (!isValidName(fname)||!isValidString(fname)) {
+        if (!isValidName(fname) || !isValidString(fname)) {
             return res.status(400).send({ status: false, message: "Please provide valid First Name" })
         }
         if (!lname) {
             return res.status(400).send({ status: false, message: "Please provide Last name" })
         }
-        if (!isValidName(lname)||!isValidString(lname)) {
+        if (!isValidName(lname) || !isValidString(lname)) {
             return res.status(400).send({ status: false, message: "Please provide valid Last name" })
         }
         if (!email) {
@@ -37,7 +37,7 @@ const createUser = async function (req, res) {
         if (!isValidEmail(email)) {
             return res.status(400).send({ status: false, message: "Please provide valid Email Id" })
         }
-        
+
         if (!phone) {
             return res.status(400).send({ status: false, message: "Please provide Phone" })
         }
@@ -54,11 +54,11 @@ const createUser = async function (req, res) {
         const secPass = await bcrypt.hash(password, salt)
         data.password = secPass
 
-        if (Object.keys(address).length==0) {
+        if (Object.keys(address).length == 0) {
             return res.status(400).send({ status: false, message: "Please provide Address" })
         }
-        let {shipping,billing} = address
-        
+        let { shipping, billing } = address
+
         if (!shipping) {
             return res.status(400).send({ status: false, message: "Please provide Shipping Address" })
         }
@@ -70,7 +70,7 @@ const createUser = async function (req, res) {
             if (!isValidString(city)) {
                 return res.status(400).send({ status: false, message: "Please provide City" })
             }
-            if (!isValidPincode(pincode) ){
+            if (!isValidPincode(pincode)) {
                 return res.status(400).send({ status: false, message: "Please provide Pincode" })
             }
         }
@@ -100,4 +100,57 @@ const createUser = async function (req, res) {
     }
 }
 
-module.exports = { createUser }
+//===================login api ==============================================
+const loginUser = async function (req, res) {
+
+    try {
+        let data = req.body
+
+        let { email, password } = data
+
+        if (Object.keys(data) == 0) {
+            return res.status(400).send({ status: false, message: "Details are not  provided" });
+        }
+
+
+        if (!email) { return res.status(400).send({ status: false, message: "email is missing" }) }
+        if (!password) { return res.status(400).send({ status: false, message: "password is missing" }) }
+        let userdata = await userModel.findOne({ email: email, password: password })
+        if (!userdata) { return res.status(404).send({ status: false, message: "user not found" }) }
+
+        let token = jwt.sign({ userid: userdata._id.toString(), iat: Date.now() }, "lithiumproject5", { expiresIn: "1h" },);
+
+
+
+        res.setHeader("x-api-key", token)
+        res.status(200).send({ status: true, message: "User login Succesfully", data: userdata._id.toString(), token })
+
+    } catch (error) {
+
+        res.status(500).send(error.message)
+    }
+
+}
+
+//====================getapi=====================================================
+const getUser = async function (req, res) {
+    try {
+        let userId = req.params.userId;
+        if (!isValidObjectId(userId)) {
+            return res.status(400).send({ status: false, message: " Invalid userId" });
+        }
+
+        const userProfile = await userModel.findById(userId);
+
+        if (!userProfile) {
+            return res.status(404).send({ status: false, message: "User Profile Not Found" });
+        }
+        return res.status(200).send({ status: true, message: "User profile details", data: userProfile });
+    } catch (error) {
+        return res.status(500).send({ status: false, message: error.message });
+    }
+};
+
+
+
+module.exports = { createUser, loginUser, getUser }

@@ -6,13 +6,16 @@ const userContoller = require("../controllers/userController")
 
 
 
-//===============aws=======================
+//=============== aws =======================
 router.post('/write-file-aws',link.getImage)
 
-//============createuser=====================
+//============ createuser =====================
 router.post('/register',userContoller.createUser)
 
-/******************************get user *****************************/
+//========== login user =========================
+router.post("/login",userContoller.loginUser)
+
+//=========== get user ==========================
 router.get("/user/:userId/profile",userContoller.getUser)
 
 module.exports = router;
