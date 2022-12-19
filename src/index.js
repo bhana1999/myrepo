@@ -1,11 +1,12 @@
 const express = require("express")
-const route = require('./routes/route')
+const route = require('./router/route')
 const mongoose = require('mongoose')
 
 const app = express();
 
 app.use(express.json())
 
+mongoose.set('strictQuery', true)
 mongoose.connect("mongodb+srv://ashi:jhansi284205@myfirstcluster.tfihevu.mongodb.net/project5",
 {useNewUrlParser:true})
 
