@@ -1,79 +1,103 @@
-const userModel = require("../model/userModel");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const Validator = require("../validation/validator");
-
+const userModel = require("../model/userModel")
+const bcrypt = require('bcrypt')
+const { isValidName, isValidEmail, isValidObjectId, isValidString, isValidPhone, isValidPassword, isValidPincode } = require('../validation/validator')
+const { getImage } = require("../aws/aws")
 
 const createUser = async function (req, res) {
     try {
-      let data = req.body;
-  
-      const { fname, lname, email, phone, password, address } = data;
+        let data = req.body
+        let { fname, lname, email, profileImage, phone, password, address } = data
+        let files = req.files
+        address = JSON.parse(address)
+    
+        if(!files)
+        {
+            return res.status(400).send({ status: false, message: "Please provide Profile Image" })
+        }
+        data.profileImage = await getImage(files)
 
- if (!Validator.isValidBody(data)) {
-    return res.status(400).send({status: false,message: "User data is required for registration", });
-  }
-  if (!Validator.isValidInputValue(fname) || !Validator.isValidOnlyCharacters(fname) ) {
-    return res.status(400).send({status: false,message: "First name is required and it should contain only alphabets", });
-  }
-  if (
-    !Validator.isValidInputValue(lname) || !Validator.isValidOnlyCharacters(lname) ) {
-    return res.status(400).send({status: false,message: "Last name is required and it should contain only alphabets"});
-  }
+        if (Object.keys(data).length == 0) {
+            return res.status(400).send({ status: false, message: "Please provide data" })
+        }
+        if (!fname) {
+            return res.status(400).send({ status: false, message: "Please provide First Name" })
+        }
+        if (!isValidName(fname)||!isValidString(fname)) {
+            return res.status(400).send({ status: false, message: "Please provide valid First Name" })
+        }
+        if (!lname) {
+            return res.status(400).send({ status: false, message: "Please provide Last name" })
+        }
+        if (!isValidName(lname)||!isValidString(lname)) {
+            return res.status(400).send({ status: false, message: "Please provide valid Last name" })
+        }
+        if (!email) {
+            return res.status(400).send({ status: false, message: "Please provide Email" })
+        }
+        if (!isValidEmail(email)) {
+            return res.status(400).send({ status: false, message: "Please provide valid Email Id" })
+        }
+        
+        if (!phone) {
+            return res.status(400).send({ status: false, message: "Please provide Phone" })
+        }
+        if (!isValidPhone(phone)) {
+            return res.status(400).send({ status: false, message: "Please provide Phone" })
+        }
+        if (!password) {
+            return res.status(400).send({ status: false, message: "Please provide Password" })
+        }
+        if (!isValidPassword(password)) {
+            return res.status(400).send({ status: false, message: "Please provide Password" })
+        }
+        const salt = await bcrypt.genSalt(10)
+        const secPass = await bcrypt.hash(password, salt)
+        data.password = secPass
 
-  if (!Validator.isValidInputValue(email) || !Validator.isValidEmail(email)) {
-    return res.status(400).send({status: false,message: "email address is required and should be a valid email address" });
-  }
+        if (Object.keys(address).length==0) {
+            return res.status(400).send({ status: false, message: "Please provide Address" })
+        }
+        let {shipping,billing} = address
+        
+        if (!shipping) {
+            return res.status(400).send({ status: false, message: "Please provide Shipping Address" })
+        }
+        if (shipping) {
+            let { street, city, pincode } = shipping
+            if (!isValidString(street)) {
+                return res.status(400).send({ status: false, message: "Please provide Street" })
+            }
+            if (!isValidString(city)) {
+                return res.status(400).send({ status: false, message: "Please provide City" })
+            }
+            if (!isValidPincode(pincode) ){
+                return res.status(400).send({ status: false, message: "Please provide Pincode" })
+            }
+        }
+        if (!billing) {
+            return res.status(400).send({ status: false, message: "Please provide Billing Address" })
+        }
+        if (billing) {
+            let { street, city, pincode } = billing
+            if (!street) {
+                return res.status(400).send({ status: false, message: "Please provide Street" })
+            }
+            if (!city) {
+                return res.status(400).send({ status: false, message: "Please provide City" })
+            }
+            if (!pincode) {
+                return res.status(400).send({ status: false, message: "Please provide Pincode" })
+            }
+        }
 
-  const notUniqueEmail = await userModel.findOne({ email:email});
-  if (notUniqueEmail) {
-    return res.status(400).send({ status: false, message: "Email address already exist" });
-  }
+        let saveDetails = await userModel.create(data)
 
-  if (!Validator.isValidInputValue(phone) || !Validator.isValidPhone(phone)) {
-    return res.status(400).send({status: false, message: "Phone number is required and should be a valid mobile number"});
-  }
 
-  const notUniquePhone = await userModel.findOne({ phone:phone });
-  if (notUniquePhone) {
-    return res.status(400).send({ status: false, message: "phone number already exist" });
-  }
-
-  if (
-    !Validator.isValidInputValue(password) || !Validator.isValidPassword(password)
-  ) {
-    return res.status(400).send({ status: false, message:"Password is required and should be of 8 to 15 characters and  must have atleast 1 number",});
-  }
-
-  if (!Validator.isValidAddress(address)) {
-    return res.status(400).send({ status: false, message: "Address is required!" });
-  }
-
-  if (!files || files.length == 0) {
-    return res.status(400).send({ status: false, message: "No profile image found" });
-  }
-
-  if (!Validator.isValidImageType(files[0].mimetype)) {
-    return res.status(400).send({status: false,message: "Only images can be uploaded (jpeg/jpg/png)"});
-  }
-
-  let fileUrl = await uploadFile(files[0].mimetype);
-  data.profileImage = fileUrl;
-
-  const saltRounds = 10;
-  let encryptedPassword = bcrypt.hash(data.password, saltRounds)
-    .then((hash) => { console.log(`Hash: ${hash}`);
-    return hash;
-    });
-
-  data.password = await encryptedPassword;
-
-      let savedData = await userModel.create(data);
-      return res.status(201).send({status: true,message: "User created successfully",data: savedData,});
-    }catch(err){
-        return res.status(500).send({status:false, err: err.message })
+        return res.status(201).send({ status: true, message: "User Created Successfully", data: saveDetails })
+    }
+    catch (err) {
+        return res.status(500).send({ status: false, message: err.message })
     }
 }
 
-
-module.exports = {createUser}
+module.exports = { createUser }

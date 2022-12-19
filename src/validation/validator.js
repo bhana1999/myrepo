@@ -1,85 +1,56 @@
 const mongoose = require('mongoose')
-const ObjectId=require("mongoose").Types.ObjectId
 
 
+//=========================// isValidEmail //===================================
 
-function isValidBody(data) {
-    if (Object.keys(data).length == 0)
-      return false
-    else return true
-  }
+const isValidEmail = function (value) {
+  let emailRegex =
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/;
+  if (emailRegex.test(value)) return true;
+};
 
-  const isValidInputValue = function (data) {
-    if (typeof (data) === 'undefined' || data === null) return false
-    if (typeof (data) === 'string' && data.trim().length > 0) return true
-    if (typeof (data) === 'object'|| Object.values(data) > 0 ) return true
-    return false
-  }
+//============================// idCharacterValid //============================
 
-  const isValidObjectId = function (data) {
-    let stringId = data.toString().toLowerCase();
-    if (!ObjectId.isValid(stringId)) { return false; }
-  
-    var result = new ObjectId(stringId);
-    if (result.toString() != stringId) {
-        return false;
-    }
+const isValidObjectId = function (value) {
+  return mongoose.Types.ObjectId.isValid(value); 
+};
+
+//==========================// isValidString //==================================
+
+const isValidString = function (value) {
+  if (typeof value === "undefined" || value === null) return false;
+  if (typeof value === "string" && value.trim().length === 0) return false;
+  return true;
+};
+
+//==============================// isValidName //===============================
+
+const isValidName = function (name) {
+  if (/^[a-z A-Z ]+$/.test(name)) {
     return true;
   }
+};
 
-  const isValidOnlyCharacters = function (data) {
-    return /^[A-Za-z ]+$/.test(data)
+//==============================// isValidMobile //===============================
+
+const isValidPhone = function (phone) {
+ if (/^[0]?[6789]\d{9}$/.test(phone)){
+    return true
+ }
+}
+//==============================// isValidPassword //==============================
+
+const isValidPassword = function(password){
+  if (/^(?=.*[0-9])(?=.*[!.@#$%^&*])[a-zA-Z0-9!.@#$%^&*]{8,15}$/.test(password)){
+    return true
   }
-  
-  function isValidEmail(data) {
-    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(data))
-      return false
-    else return true
-  }
-//============phone number==============
-  function isValidPhone(data) {
-    if (/^[6-9][0-9]{9}$/.test(data))
-      return true
-    else return false
-  }
-//===============password====================
-  const isValidPassword = function (password) {
-    const passwordRegex =/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$/
-    return passwordRegex.test(password);
-  };
+}
+//==============================// isValid-pincode //==============================
 
-//=======imagevalidation=================================
-  const isValidImageType = function (data) {
-    const reg = /image\/png|image\/jpeg|image\/jpg/;
-    return reg.test(data)
-  }
-  //=========blank address================================
+const isValidPincode = function (pincode) {
+  if (/^[1-9]{1}[0-9]{2}\s{0,1}[0-9]{3}$/.test(pincode)) return true
+  return false
+}
+//=============================// module exports //==============================
 
-  const isValidAddress = function (data) {
-    if (typeof (data) === "undefined" ||data === null) return false;
-    if (typeof (data) === "object" && Array.isArray(data) === false && Object.keys(data).length > 0) return true;
-    return false;
-  };
-  
-  const isValidPincode = function(data){
-    if ((/^[1-9][0-9]{5}$/.test(data))) {
-      return true
-    }
-    return false
-  }
-  const isValidPrice = function(data){
-    if ((/^[1-9][0-9]{2,5}\.[0-9]{2}|^[1-9][0-9]{2,5}$/).test(data)) {
-  return true
-    }
-    return false
-  }
-  
-
-
-
-
-
-
-
-
-  module.exports = { isValidBody,isValidInputValue,isValidObjectId,isValidOnlyCharacters,isValidEmail,isValidPhone,isValidPassword, isValidImageType,isValidAddress,isValidPincode,isValidPrice}
+module.exports = { isValidName, isValidEmail, isValidObjectId, isValidString,  isValidPhone, isValidPassword, isValidPincode }
