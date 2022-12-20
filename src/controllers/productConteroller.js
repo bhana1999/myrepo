@@ -35,10 +35,10 @@ const getProduct = async function(req,res) {
         let { size, name, priceGreaterThan, priceLessThan, priceSort} = data
         let filter = { isDeleted: false }
 
+        let sizes = ["S", "XS", "M", "X", "L", "XXL", "XL"]
         if (size) {
-            size = size.split(',').map((item) => item.trim())
-            for (let i = 0; i < size.length; i++) {
-            }
+          if(sizes.includes(size)) return res.status(400).send({status : false  , message : "please provide size from this only S, XS, M, X, L, XXL, XL"})
+
             filter.availableSizes = { $all: size }
         }
 
