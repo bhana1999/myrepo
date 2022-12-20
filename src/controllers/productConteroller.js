@@ -17,8 +17,8 @@ const createProduct = async function(req,res){
         if (!title) return res.status(400).send({ status: false, message: "Please provide Title" })
         if (!description) return res.status(400).send({ status: false, message: "Please provide description" })
         if (!price) return res.status(400).send({ status: false, message: "Please provide price" })
-        if (!currencyId) return res.status(400).send({ status: false, message: "Please provide currencyId" })
-        if (!currencyFormat) return res.status(400).send({ status: false, message: "Please provide currencyFormat" })        
+        // if (!currencyId) return res.status(400).send({ status: false, message: "Please provide currencyId" })
+        // if (!currencyFormat) return res.status(400).send({ status: false, message: "Please provide currencyFormat" })        
         if (!availableSizes) return res.status(400).send({ status: false, message: "Please provide availableSizes" })
 
         const product = await productModel.create(data)
@@ -35,13 +35,14 @@ const getProduct = async function(req,res) {
         let { size, name, priceGreaterThan, priceLessThan, priceSort} = data
         let filter = { isDeleted: false }
 
-        let sizes = ["S", "XS", "M", "X", "L", "XXL", "XL"]
         if (size) {
-          if(sizes.includes(size)) return res.status(400).send({status : false  , message : "please provide size from this only S, XS, M, X, L, XXL, XL"})
-
-            filter.availableSizes = { $all: size }
-        }
-
+          // if (!validator.isValidBody(size)) return res.status(400).send({ status: false, message: "Please enter Size" });
+          size = size.split(',').map((item) => item.trim())
+          for (let i = 0; i < size.length; i++) {
+              // if (!validator.isValidateSize(size[i])) return res.status(400).send({ status: false, message: "Please mention valid Size" });
+          }
+          filter.availableSizes = { $all: size }
+      }
         if (name) {
             filter.title = { $regex: name }
         }
