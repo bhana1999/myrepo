@@ -151,6 +151,53 @@ const getUser = async function (req, res) {
     }
 };
 
+const UpdateUser = async function(req,res){
+    try {
+        let userId = req.params.userId
+        let data = req.body
+        let files = req.files
+        if(files){
+            data.profileImage = await getImage(files)
+        }
+        let {email,phone,password,address} = data
+        if(email){if(!isValidEmail.test(email))return res.status(400).send({status:false,message:"Pls provide a valid email"})}
+        if(phone){if(!isValidPhone.test(phone))return res.status(400).send({status:false,message:"Pls provide a valid phone"})}
+        if(password){if(password.length<8 || password.length>15)return res.status(400).send({status:false,message:"Pls provide a password of length between 8 to 15"})}
+        if(password){
+            const salt = await bcrypt.genSalt(10)
+            const secPass = await bcrypt.hash(password, salt)
+            data.password = secPass
+        } 
+        if(address){
+            address = JSON.parse(address)
+            data.address = address
+            if(typeof address!="object")return res.status(400).send({status:false,message:"Address must be an Object-type"})
+            let {shipping,billing}=address
+            if(shipping){
+                if(typeof shipping != "object")return res.status(400).send({status:false,message:"Shipping must be an Object-type"})
+                let {pincode}=shipping
+                if(typeof pincode != "number")return res.status(400).send({status:false,message:"Pincode must be of Number-type"})
+            }
+            if(billing){
+                if(typeof billing != "object")return res.status(400).send({status:false,message:"Billing must be an Object-type"})
+                let {pincode}=billing
+                if(typeof pincode != "number")return res.status(400).send({status:false,message:"Pincode must be of Number-type"})
+            }
+        }
+        let unique = await userModel.findOne({$or:[{email},{phone}]})
+        if(unique){
+            if(unique.email == email) return res.status(400).send({status:false,message:"Pls provide a Unique email"})
+            else{
+            return res.status(400).send({status:false,message:"Pls provide a Unique phone"})
+            }
+        }
+        let UpdatedUser = await userModel.findOneAndUpdate({_id:userId,isDeleted:false},
+            {$set:data},{new:true})
+            return res.status(200).send({status:true,message:"User profile updated",data:UpdatedUser})
+    } catch (error) {
+        return res.status(500).send({status:false,message:error.message})
+    }
+}
 
 
-module.exports = { createUser, loginUser, getUser }
+module.exports = { createUser, loginUser, getUser ,UpdateUser}
