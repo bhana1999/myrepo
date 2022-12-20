@@ -23,4 +23,7 @@ router.put("/user/:userId/profile",authenticate,authorisation,userContoller.Upda
 //================== create product =================
 router.post("/products",productConteroller.createProduct)
 
+//==================get products ===================
+router.get("/products",productConteroller.getProduct)
+
 module.exports = router;

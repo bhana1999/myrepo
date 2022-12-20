@@ -183,13 +183,10 @@ const UpdateUser = async function(req,res){
         let userId = req.params.userId
         let data = req.body
         let files = req.files
-        
         const { fname, lname, email, profileImage, phone, password, address } = data
         if(files){
             data.profileImage = await getImage(files)
         }
-
-        // data.profileImage = await getImage(files)
         // if (!isValidName(fname) || !isValidString(fname)) 
         //     return res.status(400).send({ status: false, message: "Please provide valid First Name" })
         
