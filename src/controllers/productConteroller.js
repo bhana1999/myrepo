@@ -44,7 +44,7 @@ const getProduct = async function(req,res) {
           filter.availableSizes = { $all: size }
       }
         if (name) {
-            filter.title = { $regex: name }
+            filter.title = name
         }
 
         if (priceGreaterThan) {
