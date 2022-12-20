@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-const userModel = require("../models/userModel");
-const Validator = require("../validation/validator");
+const userModel = require("../model/userModel");
+const {isValidObjectId} = require("../validation/validator");
 
 //athentication
 
@@ -34,7 +34,7 @@ const authorisation = async function (req, res, next) {
   try {
     let updateuserId = req.params.userId;
 
-    if (!Validator(updateuserId)) {
+    if (!isValidObjectId(updateuserId)) {
       return res.status(400).send({status: false,message: "Please provide valid UserId for details",});
     }
 
