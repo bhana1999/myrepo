@@ -10,7 +10,7 @@ const createUser = async function (req, res) {
         let { fname, lname, email, profileImage, phone, password, address } = data
         let files = req.files
         address = JSON.parse(address)
-
+        data.address = address
         if (!files) {
             return res.status(400).send({ status: false, message: "Please provide Profile Image" })
         }
@@ -58,12 +58,14 @@ const createUser = async function (req, res) {
             return res.status(400).send({ status: false, message: "Please provide Address" })
         }
         let { shipping, billing } = address
-
+         
         if (!shipping) {
             return res.status(400).send({ status: false, message: "Please provide Shipping Address" })
         }
         if (shipping) {
+           // shipping = JSON.parse(shipping)
             let { street, city, pincode } = shipping
+
             if (!isValidString(street)) {
                 return res.status(400).send({ status: false, message: "Please provide Street" })
             }
@@ -78,6 +80,7 @@ const createUser = async function (req, res) {
             return res.status(400).send({ status: false, message: "Please provide Billing Address" })
         }
         if (billing) {
+            //billing = JSON.parse(billing)
             let { street, city, pincode } = billing
             if (!street) {
                 return res.status(400).send({ status: false, message: "Please provide Street" })
@@ -102,35 +105,58 @@ const createUser = async function (req, res) {
 
 //===================login api ==============================================
 const loginUser = async function (req, res) {
-
     try {
-        let data = req.body
-
-        let { email, password } = data
-
-        if (Object.keys(data) == 0) {
-            return res.status(400).send({ status: false, message: "Details are not  provided" });
+      let data = req.body;
+      let { email, password } = data;
+  
+      if (Object.keys(data).length == 0)
+        return res.status(404).send({status: false, Msg: "Please provide data in the request body!",
+        });
+  
+      if (!email)
+        return res.status(400).send({ status: false, message: "Email is required!" });
+  
+      if (!isValidEmail(email)) {
+        return res.status(400).send({ status: false, message: "Email is invalid!" });
+      }
+  
+      let checkEmail = await userModel.findOne({ email: email });
+      if (!checkEmail) {
+        return res.status(401).send({ status: false, message: "Email Is incorrect!" });
+      }
+      if (!password)
+        return res.status(400).send({ status: false, message: "Please enter password " });
+  
+      if (!isValidPassword(password)) {
+        return res.status(400).send({status: false,message:
+            "Password should be strong, please use one number, one upper case, one lower case and one special character and characters should be between 8 to 15 only!",
+        });
+      }
+  
+      let encryptPwd = checkEmail.password;
+  
+      await bcrypt.compare(password, encryptPwd, function (err, result) {
+        if (result) {
+          let token = jwt.sign(
+            { _id: checkEmail._id.toString() },
+            "lithiumproject5",
+            {
+              expiresIn: "1h",
+            }
+          );
+          res.setHeader("x-api-key", token);
+  
+          return res.status(201).send({status: true,message: "User login successfull",
+          data: { userId: checkEmail._id, token: token }, });
+        } else {
+          return res.status(401).send({ status: false, message: "Invalid password!" });
         }
-
-
-        if (!email) { return res.status(400).send({ status: false, message: "email is missing" }) }
-        if (!password) { return res.status(400).send({ status: false, message: "password is missing" }) }
-        let userdata = await userModel.findOne({ email: email, password: password })
-        if (!userdata) { return res.status(404).send({ status: false, message: "user not found" }) }
-
-        let token = jwt.sign({ userid: userdata._id.toString(), iat: Date.now() }, "lithiumproject5", { expiresIn: "1h" },);
-
-
-
-        res.setHeader("x-api-key", token)
-        res.status(200).send({ status: true, message: "User login Succesfully", data: userdata._id.toString(), token })
-
-    } catch (error) {
-
-        res.status(500).send(error.message)
+      });
+    } catch (err) {
+      res.status(500).send({ staus: false, message: err.message });
     }
-
-}
+  };
+  
 
 //====================getapi=====================================================
 const getUser = async function (req, res) {
@@ -151,18 +177,33 @@ const getUser = async function (req, res) {
     }
 };
 
+//==================== put api ====================================
+
 const UpdateUser = async function(req,res){
     try {
         let userId = req.params.userId
         let data = req.body
         let files = req.files
-        if(files){
-            data.profileImage = await getImage(files)
+        // if(files){
+        //     data.profileImage = await getImage(files)
+        // }
+        if (!files) {
+            return res.status(400).send({ status: false, message: "Please provide Profile Image" })
         }
-        let {email,phone,password,address} = data
-        if(email){if(!isValidEmail.test(email))return res.status(400).send({status:false,message:"Pls provide a valid email"})}
-        if(phone){if(!isValidPhone.test(phone))return res.status(400).send({status:false,message:"Pls provide a valid phone"})}
-        if(password){if(password.length<8 || password.length>15)return res.status(400).send({status:false,message:"Pls provide a password of length between 8 to 15"})}
+        data.profileImage = await getImage(files)
+
+        let {fname,lname,email,phone,password,address} = data
+
+        // if (!isValidName(fname) || !isValidString(fname)) 
+        //     return res.status(400).send({ status: false, message: "Please provide valid First Name" })
+        
+        
+        // if (!isValidName(lname) || !isValidString(lname)) 
+        //     return res.status(400).send({ status: false, message: "Please provide valid Last name" })
+        
+        if(email){if(!isValidEmail(email))return res.status(400).send({status:false,message:"Please provide a valid email"})}
+        if(phone){if(!isValidPhone(phone))return res.status(400).send({status:false,message:"Please provide a valid phone"})}
+        if(password){if(password.length<8 || password.length>15)return res.status(400).send({status:false,message:"Please provide a password of length between 8 to 15"})}
         if(password){
             const salt = await bcrypt.genSalt(10)
             const secPass = await bcrypt.hash(password, salt)
@@ -200,4 +241,5 @@ const UpdateUser = async function(req,res){
 }
 
 
-module.exports = { createUser, loginUser, getUser ,UpdateUser}
+
+module.exports = { createUser, loginUser, getUser,UpdateUser }
