@@ -177,19 +177,17 @@ const getUser = async function (req, res) {
 };
 
 //==================== put api ====================================
-
+/*
 const UpdateUser = async function(req,res){
     try {
         let userId = req.params.userId
         let data = req.body
         let files = req.files
-        
         const { fname, lname, email, profileImage, phone, password, address } = data
+
         if(files){
             data.profileImage = await getImage(files)
         }
-
-        // data.profileImage = await getImage(files)
         // if (!isValidName(fname) || !isValidString(fname)) 
         //     return res.status(400).send({ status: false, message: "Please provide valid First Name" })
         
@@ -230,14 +228,36 @@ const UpdateUser = async function(req,res){
         }
         let UpdatedUser = await userModel.findOneAndUpdate(
             {_id:userId,isDeleted:false},
-            {$set:data},
+            data,
             {new:true})
             return res.status(200).send({status:true,message:"User profile updated",data:UpdatedUser})
     } catch (error) {
         return res.status(500).send({status:false,message:error.message})
     }
 }
+*/
 
+const UpdateUser = async(req,res)=>{
+    try{
+    let data = req.body
+    let files = req.files
+    let userId = req.params.userId
 
+    let { fname, lname, email, phone, password, address, ...rest } = data
+    
 
+    if (files && files.length > 0) {
+        if (files.length > 1) return res.status(400).send({ status: false, message: "You can't enter more than one file for Update!" })
+        let uploadedURL = await getImage(files[0])
+        data.profileImage = uploadedURL
+    }
+
+    let updateUser = await userModel.findOneAndUpdate({ _id: userId }, data, { new: true })
+        if (!updateUser) { return res.status(200).send({ status: true, message: "User not exist with this UserId." }) }
+        return res.status(200).send({ status: true, message: "User profile updated", data: updateUser })
+
+    } catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
+    }
+}
 module.exports = { createUser, loginUser, getUser,UpdateUser }
