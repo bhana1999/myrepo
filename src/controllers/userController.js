@@ -122,7 +122,7 @@ const loginUser = async function (req, res) {
   
       let checkEmail = await userModel.findOne({ email: email });
       if (!checkEmail) {
-        return res.status(401).send({ status: false, message: "Email Is incorrect!" });
+        return res.status(401).send({ status: false, message: "Email is allready exist" });
       }
       if (!password)
         return res.status(400).send({ status: false, message: "Please enter password " });
