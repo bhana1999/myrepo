@@ -101,92 +101,68 @@ let updateProduct = async function (req, res) {
       let data = req.body
       let productId = req.params.productId;
       let files = req.files;
-      let update = {};
-      let addtoSet = {};
-  
       let { title,description,price,isFreeShipping,style,availableSizes,installments,} = data;
   
-      if (Object.keys(data).length == 0){
-        return res.status(400).send({ status: false, message: "Please provide data in the request body!"});
-      }
+      if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Please provide data in the request body!"});
   
       if (title) {
-        if (!isValidName(title)) {
-          return res.status(400).send({ status: false, message: "title is invalid" });
-        }
+        if (!isValidName(title)) return res.status(400).send({ status: false, message: "title is invalid" });
+
         const uniquetitle = await productModel.findOne({ title: title });
-        if (uniquetitle) {
-          return res.status(409).send({ status: false, message: "title is already present" });
-        }
-        update["title"] = title;
+        if (uniquetitle) return res.status(409).send({ status: false, message: "title is already present" });
       }
   
       if (description) {
-        if (!isValidName(description)) {
-          return res.status(400).send({ status: false, message: "description is invalid" });
-        }
-        update["description"] = description;
+        if (!isValidName(description)) return res.status(400).send({ status: false, message: "description is invalid" });
       }
   
       if (price) {
-        if (!isValidPrice(price)) {
-          return res.status(400).send({ status: false, message: "Price is invalid!" });
-        }
-        update["price"] = price;
+        if (!isValidPrice(price)) return res.status(400).send({ status: false, message: "Price is invalid!" });
       }
   
       if (files && files.length > 0) {
-        if (!isValidFile(files[0].originalname))
-        return res.status(400).send({ status: false, message: "Enter formate jpeg/jpg/png only." });
-  
-        let uploadedFileURL = await aws.uploadFile(files[0]);
-  
-        update["productImage"] = uploadedFileURL;
-  
+        if (!isValidFile(files[0].originalname)) return res.status(400).send({ status: false, message: "Enter formate jpeg/jpg/png only." });
+        var uploadedFileURL = await aws.uploadFile(files[0]);
+
       } else if (Object.keys(data).includes("productImage")) {
         return res.status(400).send({ status: false, message: "please put the productImage" });
       }
   
       if (style) {
-        if (!isValidName(style)) {
-          return res.status(400).send({ status: false, message: "Style is invalid!" });
-        }
-        update["style"] = style;
+        if (!isValidName(style)) return res.status(400).send({ status: false, message: "Style is invalid!" });
       }
   
       if (installments) {
-        if (!isValidNumbers(installments)) {
-          return res.status(400).send({ status: false, message: "Installments should be a Number only"});
-        }
-        update["installments"] = installments;
+        if (!isValidNumbers(installments)) return res.status(400).send({ status: false, message: "Installments should be a Number only"});
       }
   
       if (availableSizes) {
         availableSizes = availableSizes.split(",").map((x) => x.trim());
-        if (!isValidAvailableSizes(availableSizes))
-          return res.status(400).send({status: false, message: "availableSizes is required or put valid sizes" });
-        addtoSet["availableSizes"] = { $each: availableSizes };
+        if (!isValidAvailableSizes(availableSizes)) return res.status(400).send({status: false, message: "availableSizes is required or put valid sizes" });
       }
   
       if (isFreeShipping) {
-        if (!(isFreeShipping == "true" || isFreeShipping == "false")) {
-          return res.status(400).send({ status: false,message: "isFreeShipping should either be True, or False."});
-        }
-        update["isFreeShipping"] = isFreeShipping;
+        if (!(isFreeShipping == "true" || isFreeShipping == "false")) return res.status(400).send({ status: false,message: "isFreeShipping should either be True, or False."});
       }
   
-      if (!isValidObjectId(productId)) {
-        return res.status(400).send({ status: false, msg: "Product-id is not valid!" });
-      }
+      if (!isValidObjectId(productId)) return res.status(400).send({ status: false, msg: "Product-id is not valid!" });
   
       let CheckProduct = await productModel.findById(productId);
-      if (!CheckProduct) {
-        return res.status(404).send({ status: false, message: "Product not found!" });
-      }
+      if (!CheckProduct) return res.status(404).send({ status: false, message: "Product not found!" });
   
       let updateProduct = await productModel.findOneAndUpdate(
-        { _id: productId },{ update, $addToSet: addtoSet },
-         { new: true }
+        { _id: productId },
+        { $set :{
+            title : title,
+            description : description,
+            price : price,
+            productImage : uploadedFileURL,
+            style : style,
+            installments:installments,
+            isFreeShipping :isFreeShipping
+        }, 
+        $push : {availableSizes : availableSizes}},
+        { new: true }
       );
   
       return res.status(200).send({status: true,message: "Product successfully updated",data: updateProduct,});
