@@ -26,4 +26,10 @@ router.post("/products",productConteroller.createProduct)
 //==================get products ===================
 router.get("/products",productConteroller.getProduct)
 
+//==================get product by id ==============
+router.get("/products/:productId",productConteroller.getproductById)
+
+//==================delete product ================
+router.delete("/products/:productId",productConteroller.deleteProduct)
+
 module.exports = router;

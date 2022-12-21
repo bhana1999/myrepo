@@ -36,7 +36,6 @@ const getProduct = async function(req,res) {
         let filter = { isDeleted: false }
 
         if (size) {
-          // if (!validator.isValidBody(size)) return res.status(400).send({ status: false, message: "Please enter Size" });
           size = size.split(',').map((item) => item.trim())
           for (let i = 0; i < size.length; i++) {
               // if (!validator.isValidateSize(size[i])) return res.status(400).send({ status: false, message: "Please mention valid Size" });
@@ -74,4 +73,42 @@ const getProduct = async function(req,res) {
     }
 }
 
-module.exports = {createProduct,getProduct}
+/***************************************get product by id ********************/
+
+const getproductById = async function (req, res) {
+    try {
+        let productId = req.params.productId;
+        if (!productId) {
+            return res.status(400).send({ msg: "please input product ID" })
+        }
+       // if (!isValidObjectId(productId)) {
+           // return res.status(400).send({ status: false, msg: "productId is not valid" })
+       // }
+        let product = await productModel.findOne({ _id: productId, isDeleted: false })
+        if (!product) {
+            return res.status(404).send({ msg: "no product found/already deleted" })
+        }
+        
+       return  res.status(200).send({ status: true,data: product })
+    } catch (err) {
+        return res.status(500).send({ status: false, message: err.message })
+    }
+}
+
+/*************************************delete product  ***********************/
+
+const deleteProduct = async function (req, res) {
+    try {
+        let productId = req.params.productId
+        if (!productId) return res.status(400).send({ status: false, message: "ProductId is required." })
+        let product = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false },
+             {isDeleted: true ,deletedAt : new Date(Date.now())}, { new: true })
+        if (!product) return res.status(404).send({ status: false, message: "Product you are trying to fetch is unavailable OR already deleted" })
+        return res.status(200).send({ status: true, message: " product is deleted ",data : product })
+
+    } catch (err) {
+        return res.status(500).send({ status: false, msg: err.message })
+    }
+}
+
+module.exports = {createProduct,getProduct,deleteProduct,getproductById}
