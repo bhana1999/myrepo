@@ -29,6 +29,9 @@ router.get("/products",productConteroller.getProduct)
 //==================get product by id ==============
 router.get("/products/:productId",productConteroller.getproductById)
 
+//================= update product ===================
+router.put("/products/:productId",productConteroller.updateProduct)
+
 //==================delete product ================
 router.delete("/products/:productId",productConteroller.deleteProduct)
 

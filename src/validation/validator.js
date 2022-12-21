@@ -52,8 +52,40 @@ const isValidPincode = function (pincode) {
   return false
 }
 
+//=================//isValid-price//===================================================
+
+const isValidPrice = (value) => {
+  const regEx =/^[1-9]\d{0,8}(?:\.\d{1,2})?$/
+  const result = regEx.test(value)
+  return result
+};
+
+//===================//isValid-file//====================================================
+
+const isValidFile = (img) => {
+  const regex = /(\/*\.(?:png|gif|webp|jpeg|jpg))/.test(img)
+  return regex
+}
+
+//=================//isValid-number//=====================================================
+
+const isValidNumbers = function (value){
+  let user = /^[0-9]+$/.test(value)
+  return user
+}
+
+//=======================//isValid-size//================================================
+
+const isValidAvailableSizes = (availablesizes) => {
+  for( i=0 ;i<availablesizes.length; i++){
+    if(!["S", "XS","M","X", "L","XXL", "XL"].includes(availablesizes[i])) return false
+  }
+  return true
+};
+
+
 
 
 //=============================// module exports //==============================
 
-module.exports = { isValidName, isValidEmail, isValidObjectId, isValidString,  isValidPhone, isValidPassword, isValidPincode }
+module.exports = { isValidName, isValidEmail, isValidObjectId, isValidString,isValidAvailableSizes, isValidFile,isValidNumbers,isValidPhone, isValidPrice, isValidPassword, isValidPincode }
