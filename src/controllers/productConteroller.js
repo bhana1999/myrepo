@@ -3,7 +3,6 @@ const { getImage } = require("../aws/aws")
 const  {isValidName, isValidEmail, isValidObjectId, isValidString,isValidAvailableSizes, isValidFile,isValidNumbers,isValidPhone, isValidPrice, isValidPassword, isValidPincode }=require("../validation/validator")
 
 /****************************** create product  *******************************/
-
 const createProduct = async function(req,res){
     try {
         const data = req.body
@@ -74,7 +73,6 @@ const getProduct = async function(req,res) {
 }
 
 /***************************************get product by id ********************/
-
 const getproductById = async function (req, res) {
     try {
         let productId = req.params.productId;
@@ -121,7 +119,7 @@ let updateProduct = async function (req, res) {
       }
   
       if (files && files.length > 0) {
-        if (!isValidFile(files[0].originalname)) return res.status(400).send({ status: false, message: "Enter formate jpeg/jpg/png only." });
+        if (!isValidFile(files[0].mimetype)) return res.status(400).send({ status: false, message: "Enter formate jpeg/jpg/png only." });
         var uploadedFileURL = await aws.uploadFile(files[0]);
 
       } else if (Object.keys(data).includes("productImage")) {
