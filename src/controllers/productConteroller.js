@@ -160,32 +160,6 @@ const getproductById = async function (req, res) {
 
 /****************************update product**********************************/
 let updateProduct = async function (req, res) {
-<<<<<<< HEAD
-  try {
-    let data = req.body;
-    let productId = req.params.productId;
-    let files = req.files;
-    let update = {};
-    let addtoSet = {};
-
-    let {
-      title,
-      description,
-      price,
-      isFreeShipping,
-      style,
-      availableSizes,
-      installments,
-    } = data;
-
-    if (Object.keys(data).length == 0) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message: "Please provide data in the request body!",
-        });
-=======
     try {
       let data = req.body
       let productId = req.params.productId;
@@ -257,7 +231,6 @@ let updateProduct = async function (req, res) {
       return res.status(200).send({status: true,message: "Product successfully updated",data: updateProduct,});
     } catch (error) {
       res.status(500).send({ status: false, err: error.message });
->>>>>>> 24542ed9a8064e8e73f01a24c2cdffbd24ea6bc0
     }
 
     if (title) {
