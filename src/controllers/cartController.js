@@ -13,28 +13,30 @@ const createCart = async function(req,res){
         let userId = req.params.userId
         const {productId,quantity} = data  
 
-        if(!userId) 
-        return res.status(400).send({status : false , message : "please  provide userId "})
-        const user = await userModel.findOne({_id : userId})
-        if(!user) 
-        return res.status(404).send({status : false , message : "user not found "})
+        if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Request body cannot remain empty" });
 
-        if(!productId) 
-        return res.status(400).send({status : false , message : "please  provide productId "})
+        if(!userId) return res.status(400).send({status : false , message : "please  provide userId "})
+        if (!isValidObjectId(userId)) return res.status(400).send({ status: false, message: `${userId} is invalid` });
+
+        const user = await userModel.findOne({_id : userId})
+        if(!user) return res.status(404).send({status : false , message : "user not found "})
+
+        if(!productId) return res.status(400).send({status : false , message : "please  provide productId "})
+        if (!isValidObjectId(productId)) return res.status(400).send({ status: false, message: `${productId} is invalid` });
+        
         const product = await productModel.findOne({ _id : productId , isDeleted : false})
         let totalPrice = product.price * quantity
-        if(!product) 
-        return res.status(404).send({status : false , message : "product not found "})
+        if(!product) return res.status(404).send({status : false , message : "product not found "})
 
         const cartFind = await cartModel.findOne({userId : userId})
-      
+        console.log(cartFind["_id"])
         if(!cartFind) {
             let items = [ {
                 productId: productId,
                 quantity: quantity
               }]
-            
             let totalItems = items.length
+
             const cart = await cartModel.create({
                     userId : userId,
                     items:items,
@@ -42,14 +44,12 @@ const createCart = async function(req,res){
                     totalItems : totalItems})
             
             return res.status(201).send({status : true , message : "cart created sussuessfully",data : cart})    
-
         }
         else{
             let items = [ {
                 productId: productId,
                 quantity: quantity
               }]
-    
             let totalItems = items.length
             
             const cart = await cartModel.findOneAndUpdate(
@@ -62,18 +62,14 @@ const createCart = async function(req,res){
                 )
     
             return res.status(201).send({status : true , message : "cart created sussuessfully",data : cart})        
-
         }
 
     } catch (error) {
         return res.status(500).send({status : false , message : error.message})
         
     }
-}
-
-
+};
 //================ update cart ============================================
-
 const updateCart = async function (req, res) {
     try {
       userId = req.params.userId;
@@ -185,7 +181,6 @@ const updateCart = async function (req, res) {
     }
   };
 //=================== get api ========================================================
-
 const getCart = async function (req, res) {
   try {
 
@@ -207,7 +202,6 @@ const getCart = async function (req, res) {
   }
 }
 //================== delete api ======================================================
-
 const deleteCart = async function (req, res) {
   try {
       let userIdToken = req.userId
@@ -250,5 +244,4 @@ const deleteCart = async function (req, res) {
   }
 }
 
-
-  module.exports={createCart, updateCart,getCart, deleteCart}
+module.exports={createCart, updateCart,getCart, deleteCart}
