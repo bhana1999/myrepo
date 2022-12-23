@@ -7,16 +7,19 @@ const {isValidName,isValidEmail,isValidObjectId,isValidString,isValidAvailableSi
 /****************************** create product  *******************************/
 const createProduct = async function(req,res){
     try {
-        const data = req.body
+        let data = req.body
         let files = req.files;
-        const {title,description,price,currencyId,currencyFormat,
+        let {title,description,price,currencyId,currencyFormat,
           availableSizes,installments,isFreeShipping} = data
 
         if(Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Please provide data" });
 
         if(!files) return res.status(400).send({ status: false, message: "Please provide Product Image" });
-        if(!isValidFile(file)) return res.status(400).send({status : false , message : "Please provide in form of jpeg or png or jpg"})
-        data.productImage = await getImage(files);
+        if (files && files.length > 0) {
+          if (files.length > 1) return res.status(400).send({ status: false, message: "You can't enter more than one file for Update!" })
+          let uploadedURL = await getImage(files)
+          data.productImage = uploadedURL
+        }
 
         if(!title) return res.status(400).send({ status: false, message: "Please provide Title" });
         if(!isValidString(title) || !isValidName(title)) return res.status(400).send({status : false , message :"please provide valid title"})
@@ -41,10 +44,6 @@ const createProduct = async function(req,res){
 
         if(installments){
           if(!isValidNumbers(installments)) return res.status(400).send({status :  false , message : "please provid valid Installment"})
-        }
-
-        if(isFreeShipping){
-          if( isFreeShipping != true ||  isFreeShipping != false) return res.status(400).send({status :  false , message : "please provid isFreeShipping either true or false"})
         }
 
         const product = await productModel.create(data);
@@ -131,10 +130,10 @@ const getproductById = async function (req, res) {
 /****************************update product**********************************/
 let updateProduct = async function (req, res) {
     try {
-      const data = req.body
-      const productId = req.params.productId;
-      const files = req.files;
-      const { title,description,price,isFreeShipping,style,availableSizes,installments,} = data;
+      let data = req.body
+      let productId = req.params.productId;
+      let files = req.files;
+      let { title,description,price,isFreeShipping,style,availableSizes,installments,} = data;
   
       if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Please provide data in the request body!"});
       
@@ -152,16 +151,7 @@ let updateProduct = async function (req, res) {
       if (price) {
         if (!isValidPrice(price)) return res.status(400).send({ status: false, message: "Price is invalid!" });
       }
-  
-      if (files && files.length > 0) {
-        if (!isValidFile(files[0].mimetype)) return res.status(400).send({ status: false, message: "Enter formate jpeg/jpg/png only." });
-      }
-      const uploadedFileURL = await getImage(files[0])
       
-      // else if (Object.keys(data).includes(productImage)) {
-      //   return res.status(400).send({ status: false, message: "please put the productImage" });
-      // }
-  
       if (style) {
         if (!isValidName(style)) return res.status(400).send({ status: false, message: "Style is invalid!" });
       }
@@ -179,16 +169,21 @@ let updateProduct = async function (req, res) {
         if (!(isFreeShipping == true || isFreeShipping == false)) return res.status(400).send({ status: false,message: "isFreeShipping should either be True, or False."});
       }
     
-      const CheckProduct = await productModel.findById(productId);
-      if (!CheckProduct) return res.status(404).send({ status: false, message: "Product not found!" });
-  
+      if (files && files.length > 0) {
+        if (files.length > 1) return res.status(400).send({ status: false, message: "You can't enter more than one file for Update!" })
+        data.productImage = await getImage(files)
+      }
+
+      const CheckProduct = await productModel.findOne({_id :productId ,isDeleted : false});
+      if (!CheckProduct) return res.status(404).send({ status: false, message: "Product not found " });
+      
       const updateProduct = await productModel.findOneAndUpdate(
         { _id: productId ,isDeleted : false},
         { $set :{
             title : title,
             description : description,
             price : price,
-            productImage : uploadedFileURL,
+            productImage : productImage,
             style : style,
             installments:installments,
             isFreeShipping :isFreeShipping
@@ -196,6 +191,9 @@ let updateProduct = async function (req, res) {
         $push : {availableSizes : availableSizes}},
         { new: true }
       );
+
+      if (!updateProduct) return res.status(400).send({ status: false, message: "product is already deleted" });
+
   
       return res.status(200).send({status: true,message: "Product successfully updated",data: updateProduct,});
     } catch (error) {

@@ -70,7 +70,7 @@ const isValidFile = (img) => {
 //=================//isValid-number//=====================================================
 
 const isValidNumbers = function (value) {
-  let user = /^[0-9]+$/.toFixed(2).test(value);
+  let user = /^[0-9]+$/.test(value);
   return user;
 };
 
