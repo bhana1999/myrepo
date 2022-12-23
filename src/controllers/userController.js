@@ -8,9 +8,9 @@ const {isValidName,isValidEmail,isValidObjectId,isValidString,isValidPhone,
 
 const createUser = async function (req, res) {
   try {
-    const data = req.body;
-    const { fname, lname, email,phone, password, address } = data;
-    const files = req.files;
+    let  data = req.body;
+    let  { fname, lname, email,phone, password, address } = data;
+    let files = req.files;
 
     if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Please provide data" });
     

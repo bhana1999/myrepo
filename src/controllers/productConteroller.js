@@ -7,15 +7,16 @@ const {isValidName,isValidEmail,isValidObjectId,isValidString,isValidAvailableSi
 /****************************** create product  *******************************/
 const createProduct = async function(req,res){
     try {
-        const data = req.body
+        let data = req.body
         let files = req.files;
-        const {title,description,price,currencyId,currencyFormat,
+        let {title,description,price,currencyId,currencyFormat,
           availableSizes,installments,isFreeShipping} = data
+
 
         if(Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Please provide data" });
 
         if(!files) return res.status(400).send({ status: false, message: "Please provide Product Image" });
-        if(!isValidFile(file)) return res.status(400).send({status : false , message : "Please provide in form of jpeg or png or jpg"})
+      
         data.productImage = await getImage(files);
 
         if(!title) return res.status(400).send({ status: false, message: "Please provide Title" });
@@ -43,9 +44,7 @@ const createProduct = async function(req,res){
           if(!isValidNumbers(installments)) return res.status(400).send({status :  false , message : "please provid valid Installment"})
         }
 
-        if(isFreeShipping){
-          if( isFreeShipping != true ||  isFreeShipping != false) return res.status(400).send({status :  false , message : "please provid isFreeShipping either true or false"})
-        }
+        
 
         const product = await productModel.create(data);
         return res.status(201).send({status: true,message: "Product created successfully",data: product,});
@@ -155,12 +154,13 @@ let updateProduct = async function (req, res) {
   
       if (files && files.length > 0) {
         if (!isValidFile(files[0].mimetype)) return res.status(400).send({ status: false, message: "Enter formate jpeg/jpg/png only." });
+       var uploadedFileURL = await getImage(files[0])
       }
-      const uploadedFileURL = await getImage(files[0])
+     
       
-      // else if (Object.keys(data).includes(productImage)) {
-      //   return res.status(400).send({ status: false, message: "please put the productImage" });
-      // }
+    else if (Object.keys(data).includes(productImage)) {
+       return res.status(400).send({ status: false, message: "please put the productImage" });
+        }
   
       if (style) {
         if (!isValidName(style)) return res.status(400).send({ status: false, message: "Style is invalid!" });
