@@ -133,7 +133,7 @@ let updateProduct = async function (req, res) {
       let data = req.body
       let productId = req.params.productId;
       let files = req.files;
-      let { title,description,price,isFreeShipping,style,availableSizes,installments,} = data;
+      let { title,description,price,productImage,isFreeShipping,style,availableSizes,installments,} = data;
   
       if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Please provide data in the request body!"});
       
@@ -171,7 +171,7 @@ let updateProduct = async function (req, res) {
     
       if (files && files.length > 0) {
         if (files.length > 1) return res.status(400).send({ status: false, message: "You can't enter more than one file for Update!" })
-        data.productImage = await getImage(files)
+        productImage = await getImage(files)
       }
 
       const CheckProduct = await productModel.findOne({_id :productId ,isDeleted : false});
