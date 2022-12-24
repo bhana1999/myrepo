@@ -28,8 +28,8 @@ const createCart = async function(req,res){
       let totalPrice = product.price * quantity
       if(!product) return res.status(404).send({status : false , message : "product not found "})
 
-      const cartFind = await cartModel.findOne({userId : userId})
-      
+      let cartFind = await cartModel.findOne({userId : userId})
+
       if(!cartFind) {
           let items = [ {
               productId: productId,
@@ -46,10 +46,30 @@ const createCart = async function(req,res){
           return res.status(201).send({status : true , message : "cart created sussuessfully",data : cart})    
       }
       else{
+         // cart find and product id find in cart
+          let cartItems = cartFind.items
+          for(let i =0;i<cartItems .length;i++){
+              if( productId == cartItems[i].productId){
+                cartItems[i].quantity = (cartItems [i].quantity)+quantity
+                
+                let items = cartItems 
+                let totalPrice = (cartFind.totalPrice) + (quantity * (product.price))
+     
+                let cart= await cartModel.findOneAndUpdate(
+                  {userId : userId},
+                  {$set : {items : items , totalPrice : totalPrice}},
+                  {new:true})
+                
+                return res.status(201).send({status:true,message:"Success",data:cart})
+              } 
+          }
+         // cart find but product id not find in cart
+
           let items = [ {
               productId: productId,
               quantity: quantity
             }]
+            
           let totalItems = items.length
           
           const cart = await cartModel.findOneAndUpdate(
@@ -216,11 +236,11 @@ const getCart = async function (req, res) {
       if (!userData) {
        return res.status(404).send({ status: false, message: "user you are searching does not exist" })
       }
-      const cartData = await cartModel.findOne({ userId: userId })
-      if (!cartData) {
+      const cartFind = await cartModel.findOne({ userId: userId })
+      if (!cartFind) {
           return rse.status(400).send({ status: false, message: "cart does not exist" })
       }
-      return res.status(200).send({ status: true, message: "Cart details", data: cartData })
+      return res.status(200).send({ status: true, message: "Cart details", data: cartFind })
 
   } catch (err) {
       return res.status(500).send({ status: false, message: err.message })
