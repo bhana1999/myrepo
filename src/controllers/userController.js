@@ -41,17 +41,16 @@ const createUser = async function (req, res) {
     const salt = await bcrypt.genSalt(10);
     const secPass = await bcrypt.hash(password, salt);
          data.password = secPass;
-    if(!address)
+    if(!address){
     return res.status(400).send({status:false,message:"please provide address"})
-    if(address){
+    }else if(address){
       address = JSON.parse(address);
       data.address = address;
 
       const { shipping, billing } = address;
       if(!shipping){
         return res.status(400).send({status:false,message:"please provide shipping"})
-      }else
-      if (shipping) {
+      }else if (shipping) {
         const { street, city, pincode } = shipping;
         if (!street) return res.status(400).send({ status: false, message: "Please provide street" });
         if (!isValidString(street)) return res.status(400).send({ status: false, message: "Please provide Street" });
