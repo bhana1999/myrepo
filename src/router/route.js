@@ -55,4 +55,9 @@ router.post("/users/:userId/orders",authenticate,authorisation,orderController.c
 //================= update order api =================================================
 router.put("/users/:userId/orders",authenticate,authorisation,orderController.updateOrder)
 
+
+
+router.all('/*',(req,res)=>{return res.status(400).send({status:false,Message:"please provide valid path"})})
+
+
 module.exports = router;

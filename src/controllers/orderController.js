@@ -13,7 +13,7 @@ const productModel = require("../model/productModel");
       let userId = req.params.userId;
       let data = req.body;
       let cartId = data.cartId;
-      let productId = data.productId
+      
   
       if(Object.keys(data).length == 0)
         return res.status(400).send({status: false,message: "Please provide data in request body"});
@@ -76,25 +76,41 @@ const productModel = require("../model/productModel");
 
       if(Object.keys(data).length == 0) return res.status(400).send({status: false,message: "Please provide data in request body"});
 
-      // const user = await userModel.findOne({ _id : userId})
-      // if(!user) return res.status(404).send({status : false , message :  "user not found"})
+      const user = await userModel.findOne({ _id : userId})
+       if(!user) return res.status(404).send({status : false , message :  "user not found"})
+
+     if (!orderId)
+     return res.status(400).send({status:false,message:"orderId is require"})
+      if(!isValidObjectId(orderId))
+      return res.status(400).send({status:false,message:"orderId InValid"})
 
       const findOrder = await orderModel.findOne({ _id : orderId, isDeleted : false})
-      if(!findOrder) return res.status(404).send({status : false , message :  "order not found"})
+      if(!findOrder)
+       return res.status(404).send({status : false , message :  "order not found"})
 
-      if(userId != findOrder.userId) return res.status(403).send({status : false ,message : "user is not authorised user"})
+      if(userId != findOrder.userId) 
+      return res.status(403).send({status : false ,message : "user is not authorised user"})
+
+      if(!status)
+      return res.status(400).send({status:false,message:"status is require"})
+      if(!isValidString(status))
+      return res.status(400).send({status:false,message:"Invalid status"})
 
       let statuslist =  ["pending", "completed", "canceled"]
-      if(!statuslist.includes(status)) return res.status(400).send({status : false , message : "status must be pending or completed or canceled"});
+      if(!statuslist.includes(status)) 
+      return res.status(400).send({status : false , message : "status must be pending or completed or canceled"});
 
+
+      
       const order = await orderModel.findOneAndUpdate(
         {_id : orderId , isDeleted : false , cancellable : true},
         data,
         {new : true}
       )
+      if(!order) 
+      return res.status(404).send({status : false , message :  "order not found"})
 
-      if(!order) return res.status(404).send({status : false , message :  "order not found"})
-
+     
       return res.status(200).send({status : true , message :" Order Updated Successfully ",data : order})
 
       
