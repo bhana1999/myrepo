@@ -1,25 +1,25 @@
 const orderModel = require("../model/orderModel")
 const cartModel = require("../model/cartModel")
 const userModel = require("../model/userModel")
+const productModel = require("../model/productModel");
 
 const {isValidName,isValidEmail,isValidObjectId,isValidString,isValidAvailableSizes,
     isValidFile,isValidNumbers,isValidPhone,isValidPrice,isValidPassword,isValidPincode,
   } = require("../validation/validator");
-const productModel = require("../model/productModel");
 
 
- const createOrder = async function (req, res) {
+const createOrder = async function (req, res) {
     try {
       let userId = req.params.userId;
       let data = req.body;
       let cartId = data.cartId;
       
-  
       if(Object.keys(data).length == 0)
         return res.status(400).send({status: false,message: "Please provide data in request body"});
   
       if (!isValidObjectId(userId))
         return res.status(400).send({ status: false, message: "Please provide valid User Id" });
+
       let findUser = await userModel.findOne({ _id: userId });
       if (!findUser)
         return res.status(404).send({ status: false, message: "not found userId" });
@@ -47,6 +47,7 @@ const productModel = require("../model/productModel");
   
       let count = 0;
       let items = findCart.items;
+
       for (let i = 0; i < items.length; i++) {
         count += items[i].quantity;
       }
@@ -55,7 +56,8 @@ const productModel = require("../model/productModel");
   
       let finalData = await orderModel.create(obj);
   
-      const updateOrder = await cartModel.findOneAndUpdate({ userId },
+      const updateOrder = await cartModel.findOneAndUpdate(
+        { userId },
         { $set: { items: [], totalItems: 0, totalPrice: 0 } },
         { new: true }
       );
@@ -111,7 +113,7 @@ const productModel = require("../model/productModel");
       return res.status(404).send({status : false , message :  "order not found"})
 
      
-      return res.status(200).send({status : true , message :" Order Updated Successfully ",data : order})
+      return res.status(200).send({status : true , message :"Success",data : order})
 
       
     } catch (error) {
