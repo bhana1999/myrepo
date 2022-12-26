@@ -18,7 +18,7 @@ const createCart = async function(req,res){
         if(!userId) return res.status(400).send({status : false , message : "please  provide userId "})
         if (!isValidObjectId(userId)) return res.status(400).send({ status: false, message: `${userId} is invalid` });
 
-        const user = await userModel.findOne({_id : userId})
+        const user = await userModel.findOne({_Id : userId})
         if(!user) return res.status(404).send({status : false , message : "user not found "})
 
         if(!productId) return res.status(400).send({status : false , message : "please  provide productId "})
@@ -29,7 +29,7 @@ const createCart = async function(req,res){
         if(!product) return res.status(404).send({status : false , message : "product not found "})
 
         const cartFind = await cartModel.findOne({userId : userId})
-        console.log(cartFind["_id"])
+       
         if(!cartFind) {
             let items = [ {
                 productId: productId,
