@@ -11,7 +11,7 @@ const createCart = async function(req,res){
   try {
       let data = req.body
       let userId = req.params.userId
-      const {productId,quantity} = data  
+      const {productId,quantity,cartId} = data  
 
       if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Request body cannot remain empty" });
 
@@ -28,7 +28,7 @@ const createCart = async function(req,res){
       let totalPrice = product.price * quantity
       if(!product) return res.status(404).send({status : false , message : "product not found "})
 
-      let cartFind = await cartModel.findOne({userId : userId})
+      let cartFind = await cartModel.findOne({ userId : userId })
 
       if(!cartFind) {
           let items = [ {
@@ -47,6 +47,8 @@ const createCart = async function(req,res){
       }
       else{
          // cart find and product id find in cart
+          if(!(cartFind._id == cartId)) return res.status(400).send({status : false , message : "useid not match"})
+
           let cartItems = cartFind.items
           for(let i =0;i<cartItems .length;i++){  // we are checking that the product that we are sending from request body is exist in our items of cart model 
               if( productId == cartItems[i].productId){ // the client is suggesting us for decrementation of one quantity of the product from the cart
