@@ -48,8 +48,9 @@ const createCart = async function(req,res){
       else{
          // cart find and product id find in cart
           let cartItems = cartFind.items
-          for(let i =0;i<cartItems .length;i++){
-              if( productId == cartItems[i].productId){
+          for(let i =0;i<cartItems .length;i++){  // we are checking that the product that we are sending from request body is exist in our items of cart model 
+              if( productId == cartItems[i].productId){ // the client is suggesting us for decrementation of one quantity of the product from the cart
+
                 cartItems[i].quantity = (cartItems [i].quantity)+quantity
                 
                 let items = cartItems 
