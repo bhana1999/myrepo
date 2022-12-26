@@ -29,7 +29,7 @@ const createCart = async function(req,res){
       if(!product) return res.status(404).send({status : false , message : "product not found "})
 
         const cartFind = await cartModel.findOne({userId : userId})
-        console.log(cartFind["_id"])
+        //console.log(cartFind["_id"])
         if(!cartFind) {
             let items = [ {
                 productId: productId,
@@ -48,7 +48,7 @@ const createCart = async function(req,res){
       else{
          // cart find and product id find in cart
           let cartItems = cartFind.items
-          for(let i =0;i<cartItems .length;i++){
+          for(let i =0;i<cartItems.length;i++){
               if( productId == cartItems[i].productId){
                 cartItems[i].quantity = (cartItems [i].quantity)+quantity
                 
