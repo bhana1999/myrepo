@@ -5,6 +5,8 @@ const {authenticate,authorisation} = require('../middleware/auth')
 const userContoller = require("../controllers/userController")
 const productConteroller = require("../controllers/productConteroller")
 const cartController = require ("../controllers/cartController")
+const orderController = require("../controllers/orderController")
+
 
 //=============== aws =======================
 router.post("/write-file-aws", link.getImage);
@@ -48,8 +50,8 @@ router.get("/users/:userId/cart",authenticate,authorisation,cartController.getCa
 //==================delete api ==============================================
 router.delete("/users/:userId/cart",authenticate,authorisation,cartController.deleteCart)
 
-
-
+//================= order api =================================================
+router.post("/users/:userId/orders",authenticate,authorisation,orderController.createOrder)
 
 
 

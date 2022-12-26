@@ -190,7 +190,7 @@ const UpdateUser = async(req,res)=>{
     if (shipping) {
       const { street, city, pincode } = shipping;
       if (!street) return res.status(400).send({ status: false, message: "Please provide street" });
-      if (!isValidString(street) || !isValidName(street)) return res.status(400).send({ status: false, message: "Please provide Street" });
+      if (!isValidString(street)) return res.status(400).send({ status: false, message: "Please provide Street" });
       
       if (!city) return res.status(400).send({ status: false, message: "Please provide city" });
       if (!isValidString(city) || !isValidName(city)) return res.status(400).send({ status: false, message: "Please provide city" });
@@ -201,7 +201,7 @@ const UpdateUser = async(req,res)=>{
     if (billing) {
       const { street, city, pincode } = billing;
       if (!street) return res.status(400).send({ status: false, message: "Please provide street" });
-      if (!isValidString(street) || !isValidName(street)) return res.status(400).send({ status: false, message: "Please provide Street" });
+      if (!isValidString(street)) return res.status(400).send({ status: false, message: "Please provide Street" });
       
       if (!city) return res.status(400).send({ status: false, message: "Please provide city" });
       if (!isValidString(city) || !isValidName(city)) return res.status(400).send({ status: false, message: "Please provide city" });
