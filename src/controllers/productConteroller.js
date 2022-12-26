@@ -12,6 +12,7 @@ const createProduct = async function(req,res){
         let {title,description,price,currencyId,currencyFormat,
           availableSizes,installments,isFreeShipping} = data
 
+
         if(Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Please provide data" });
 
         if(!files) return res.status(400).send({ status: false, message: "Please provide Product Image" });

@@ -63,7 +63,7 @@ const isValidPrice = (value) => {
 //===================//isValid-file//====================================================
 
 const isValidFile = (img) => {
-  const regex = /(\/*\.(?:png|gif|webp|jpeg|jpg))/.test(img);
+  const regex = /(\/*\.(?:png|gif|webp|jpeg|jpg|JPG|JPEG))/.test(img);
   return regex;
 };
 
