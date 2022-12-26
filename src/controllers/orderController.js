@@ -5,6 +5,7 @@ const userModel = require("../model/userModel")
 const {isValidName,isValidEmail,isValidObjectId,isValidString,isValidAvailableSizes,
     isValidFile,isValidNumbers,isValidPhone,isValidPrice,isValidPassword,isValidPincode,
   } = require("../validation/validator");
+const productModel = require("../model/productModel");
 
 
  const createOrder = async function (req, res) {
@@ -12,6 +13,7 @@ const {isValidName,isValidEmail,isValidObjectId,isValidString,isValidAvailableSi
       let userId = req.params.userId;
       let data = req.body;
       let cartId = data.cartId;
+      let productId = data.productId
   
       if(Object.keys(data).length == 0)
         return res.status(400).send({status: false,message: "Please provide data in request body"});
@@ -38,7 +40,7 @@ const {isValidName,isValidEmail,isValidObjectId,isValidString,isValidAvailableSi
         items: findCart.items,
         totalPrice: findCart.totalPrice,
         totalItems: findCart.totalItems,
-        totalQuantity: 0,
+        totalQuantity: findCart.totalQuantity,
         status: "pending",
         cancellable: true,
       };
