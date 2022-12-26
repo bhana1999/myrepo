@@ -50,10 +50,14 @@ router.get("/users/:userId/cart",authenticate,authorisation,cartController.getCa
 //==================delete api ==============================================
 router.delete("/users/:userId/cart",authenticate,authorisation,cartController.deleteCart)
 
-//================= order api =================================================
+//================= create order api =================================================
 router.post("/users/:userId/orders",authenticate,authorisation,orderController.createOrder)
+//================= update order api =================================================
+router.put("/users/:userId/orders",authenticate,authorisation,orderController.updateOrder)
 
 
+
+router.all('/*',(req,res)=>{return res.status(400).send({status:false,Message:"please provide valid path"})})
 
 
 module.exports = router;

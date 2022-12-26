@@ -3,9 +3,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId
 
 const cartSchema = new mongoose.Schema(
   {
-    userId: {
-      type: ObjectId,
-      ref: "User",
+    userId: {type: ObjectId,ref: "User",
     },
     items: [{
       _id: {id:false},
