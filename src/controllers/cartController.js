@@ -47,7 +47,9 @@ const createCart = async function(req,res){
       }
       else{
          // cart find and product id find in cart
-          if(!(cartFind._id == cartId)) return res.status(400).send({status : false , message : "cartId not match"})
+          if(!cartId) return res.status(400).send({status : false , message : "cartID is required"})
+          
+          if(!(cartFind._id == cartId)) return res.status(400).send({status : false , message : "cartID not match"})
 
           let cartItems = cartFind.items
           for(let i =0;i<cartItems .length;i++){  // we are checking that the product that we are sending from request body is exist in our items of cart model 

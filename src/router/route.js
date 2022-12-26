@@ -50,10 +50,9 @@ router.get("/users/:userId/cart",authenticate,authorisation,cartController.getCa
 //==================delete api ==============================================
 router.delete("/users/:userId/cart",authenticate,authorisation,cartController.deleteCart)
 
-//================= order api =================================================
+//================= create order api =================================================
 router.post("/users/:userId/orders",authenticate,authorisation,orderController.createOrder)
-
-
-
+//================= update order api =================================================
+router.put("/users/:userId/orders",authenticate,authorisation,orderController.updateOrder)
 
 module.exports = router;
