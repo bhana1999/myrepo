@@ -40,11 +40,15 @@ const createProduct = async function(req,res){
         if(!isValidNumbers(price)) 
           return res.status(400).send({status : false , message :"please provide valid price"})
 
+         if(currencyId){
         if (currencyId != "INR") 
           return res.status(400).send({status: false, msg: "Please provide the currencyId as `INR`!",});
-        
-        if (currencyFormat != "₹") 
+         }
+      
+         if(currencyFormat){
+        if (currencyFormat != "₹" ) 
           return res.status(400).send({status: false, message: "Please provide the currencyformat as `₹`!",})
+        }
 
         if (!availableSizes) 
           return res.status(400).send({ status: false, message: "Please provide availableSizes" });
