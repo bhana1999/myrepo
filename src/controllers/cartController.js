@@ -15,9 +15,7 @@ const createCart = async function(req,res){
 
       if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Request body cannot remain empty" });
 
-      if(!quantity) {
-        quantity = 1
-      }
+     
       
       if(!userId) return res.status(400).send({status : false , message : "please  provide userId "})
       if (!isValidObjectId(userId)) return res.status(400).send({ status: false, message: `${userId} is invalid` });
@@ -31,6 +29,14 @@ const createCart = async function(req,res){
       const product = await productModel.findOne({ _id : productId , isDeleted : false})
       let totalPrice = product.price * quantity
       if(!product) return res.status(404).send({status : false , message : "product not found "})
+    if (quantity ) {
+      if (!isValidNumbers(quantity)) {
+          return res.status(400).send({ status: false, message: "Quantity is not Valid" })
+      }
+  }
+     if(!quantity) {
+        quantity = 1
+      }
 
       let cartFind = await cartModel.findOne({ userId : userId })
 
