@@ -1,17 +1,14 @@
 const productModel = require("../model/productModel");
 const { getImage } = require("../aws/aws");
-const {isValidName,isValidEmail,isValidObjectId,isValidString,isValidAvailableSizes,
-  isValidFile,isValidNumbers,isValidPhone,isValidPrice,isValidPassword,isValidPincode,
-} = require("../validation/validator");
+const {isValidName,isValidObjectId,isValidString,isValidAvailableSizes,
+  isValidNumbers,isValidPrice,} = require("../validation/validator");
 
 /****************************** create product  *******************************/
 const createProduct = async function(req,res){
     try {
         let data = req.body
         let files = req.files;
-        let {title,description,price,currencyId,currencyFormat,
-          availableSizes,installments,isFreeShipping} = data
-
+        let {title,description,price,currencyId,currencyFormat,availableSizes,installments} = data
 
         if(Object.keys(data).length == 0)
          return res.status(400).send({ status: false, message: "Please provide data" });
@@ -30,30 +27,34 @@ const createProduct = async function(req,res){
         
         let duplicateTitle = await productModel.findOne({title})
         if(duplicateTitle)
-        return res.status(400).send({status:false,message: " Title is already exist"})
-        if (!description) return res.status(400).send({ status: false, message: "Please provide description" });
-        if(!isValidString(description)) return res.status(400).send({status : false , message :"please provide valid description"})
-
-        if (!price) return res.status(400).send({ status: false, message: "Please provide price" });
-        if(!isValidNumbers(price)) return res.status(400).send({status : false , message :"please provide valid price"})
-
-        if (!currencyId) return res.status(400).send({ status: false, message: "Currency Id is required!" });
-        if (currencyId != "INR") return res.status(400).send({status: false, msg: "Please provide the currencyId as `INR`!",});
+          return res.status(400).send({status:false,message: " Title is already exist"})
         
-        // if (!currencyFormat) return res.status(400).send({ status: false, message: "Currency Format is required!" });
-        // if (currencyFormat != "₹") return res.status(400).send({status: false, message: "Please provide the currencyformat as `₹`!",})
+        if (!description) 
+          return res.status(400).send({ status: false, message: "Please provide description" });
+        
+        if(!isValidString(description)) 
+          return res.status(400).send({status : false , message :"please provide valid description"})
+
+        if (!price) 
+          return res.status(400).send({ status: false, message: "Please provide price" });
+        if(!isValidNumbers(price)) 
+          return res.status(400).send({status : false , message :"please provide valid price"})
+
+        if (currencyId != "INR") 
+          return res.status(400).send({status: false, msg: "Please provide the currencyId as `INR`!",});
+        
+        if (currencyFormat != "₹") 
+          return res.status(400).send({status: false, message: "Please provide the currencyformat as `₹`!",})
 
         if (!availableSizes) 
-        return res.status(400).send({ status: false, message: "Please provide availableSizes" });
-        
-        availableSizes = availableSizes.split(",").map((item) => item.trim());
+          return res.status(400).send({ status: false, message: "Please provide availableSizes" });
 
-        let sizes =   ["S", "XS", "M", "X", "L", "XXL", "XL"]
-        for (let i = 0; i < availableSizes.length; i++) {
-          if(!sizes.includes(availableSizes[i])) return res.status(400).send({ status: false, message: "Please provide size from S, XS, M, X, L, XXL, XL" });
-        }
+        if(!isValidAvailableSizes(availableSizes)) 
+          return res.status(400).send({ status: false, message: "Please provide size from S, XS, M, X, L, XXL, XL" });
+        
         if(installments){
-          if(!isValidNumbers(installments)) return res.status(400).send({status :  false , message : "please provid valid Installment"})
+          if(!isValidNumbers(installments)) 
+            return res.status(400).send({status :  false , message : "please provid valid Installment"})
         }
 
         const product = await productModel.create(data);
@@ -67,23 +68,20 @@ const createProduct = async function(req,res){
 /************************************get product by query  *****************/
 const getProduct = async function (req, res) {
   try {
-    const queries = req.query;
-    const { size, name, priceGreaterThan, priceLessThan, priceSort } = queries;
+    let queries = req.query;
+    let { size, name, priceGreaterThan, priceLessThan, priceSort } = queries;
 
     let filter = { isDeleted: false };
 
-    if(Object.keys(queries) == 0){
-      let products = await productModel.find()
-      if (!products) return res.status(404).send({ status: false, message: "Product Not Found." });
-      return res.status(200).send({ status: true, message: "Success", data : products });
-    }
+    if(Object.keys(queries) == 0) 
+      return res.status(400).send({ status: false, message: "not given any query " });
 
     if (size) {
       size = size.split(",").map((item) => item.trim());
       for (let i = 0; i < size.length; i++) {
         if(!isValidAvailableSizes(size[i])) return res.status(400).send({ status: false, message: "Please provide size from S, XS, M, X, L, XXL, XL" });
       }
-      filter.availableSizes = { $all: size };
+      filter.availableSizes = { $in: size };
     }
     if (name) {
       if(!isValidName(name)) return res.status(400).send({status : false , message :"please provide valid name"})
