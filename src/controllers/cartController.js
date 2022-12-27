@@ -154,8 +154,8 @@ const updateCart = async function (req, res) {
         message: "You have not added any products in your cart",
       });
 
-     if (!removeProduct)
-      return res.status(400).send({ status: false, message: "removeProduct is required" });
+    //  if (!removeProduct)
+    //   return res.status(400).send({ status: false, message: "removeProduct is required" });
 
     if (!(removeProduct == 0 || removeProduct == 1))
       return res.status(400).send({
@@ -182,7 +182,7 @@ const updateCart = async function (req, res) {
           );
           return res.status(200).send({
             status: true,
-            message: "Success",
+            message: "product remove Successfully",
             data: productRemove,
           });
         }
@@ -247,30 +247,26 @@ const getCart = async function (req, res) {
   }
 }
 //================== delete api ======================================================
+
 const deleteCart = async function (req, res) {
   try {
-     // let userIdToken = req.userId
-      let userId = req.params.userId
+    let userId = req.params.userId;
 
-      //validation of userId
-
-      if (!isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Invalid UserId in params query." })
+     if (!userId)
+      return res.status(400).send({ status: false, message: "userid must be present in params" });
+     if (!isValidObjectId(userId)) 
+      return res.status(400).send({ status: false, message: "Invalid UserId in params query." })
 
       // checking user exist or not
 
       let userExist = await userModel.findOne({ _id: userId })
-      if (!userExist) return res.status(400).send({ status: false, message: " userId is not exit " })
+      if (!userExist)
+       return res.status(400).send({ status: false, message: " userId is not exit " })
 
-      // // Authentication & Authorization process
-
-      // if (userExist._id.toString() != userIdToken) {
-      //     return res.status(401).send({ status: false, message: `Unauthorized access! User's info doesn't match` });
-
-      // }
 
       // checking cart exist or not
 
-      let cartExist = await cartModel.findOne({ userId: userId })
+      let cartExist = await cartModel.findOne({ userId: userId }).select({items:1,totalItems:1,totalPrice:1,})
       if (!cartExist) return res.status(400).send({ status: false, message: " cart is not exit " })
 
       //delete cart of the user
@@ -281,14 +277,14 @@ const deleteCart = async function (req, res) {
               totalPrice: 0,
               totalItems: 0
           }
-      })
-      return res.status(204).send({ status: true, message: "Cart deleted successfully"})
+      },{new:true})
+      return res.status(204).send({ status: true, message: "Cart deleted successfully",data: deletedCart})
 
+   
   } catch (err) {
-      return res.status(500).send({ status: false, message: err.message})
+    return res.status(500).send({ status: false, message: err.message });
   }
-}
-
+};
 
 
 

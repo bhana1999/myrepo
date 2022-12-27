@@ -62,7 +62,7 @@ const createOrder = async function (req, res) {
         { new: true }
       );
   
-      return res.status(201).send({ status: true, message: "Success", data: finalData,updateOrder});
+      return res.status(201).send({ status: true, message: "Success", data: finalData});
     } catch (error) {
       return res.status(500).send({ status: false, message: error.message });
     }
@@ -105,10 +105,7 @@ const createOrder = async function (req, res) {
 
       
       const order = await orderModel.findOneAndUpdate(
-        {_id : orderId , isDeleted : false , cancellable : true},
-        data,
-        {new : true}
-      )
+        {_id : orderId , isDeleted : false , cancellable : true}, data, {new : true})
       if(!order) 
       return res.status(404).send({status : false , message :  "order not found"})
 

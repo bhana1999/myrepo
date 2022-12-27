@@ -9,14 +9,15 @@ const {isValidName,isValidEmail,isValidObjectId,isValidString,isValidPhone,
 const createUser = async function (req, res) {
   try {
     let data = req.body;
-    let { fname, lname, email,phone, password, address } = data;
+    let { fname, lname, email,phone, profileImage, password, address } = data;
     let files = req.files;
 
     if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Please provide data" });
     
-    if (!files) return res.status(400).send({ status: false, message: "Please provide Profile Image" });
+    if (files.length==0) return res.status(400).send({ status: false, message: "Please provide profileImage" });
     data.profileImage = await getImage(files);
 
+    
     if (!fname) return res.status(400).send({ status: false, message: "Please provide First Name" });
     if (!isValidName(fname) || !isValidString(fname)) return res.status(400).send({ status: false, message: "Please provide valid First Name" });
 
@@ -30,13 +31,13 @@ const createUser = async function (req, res) {
     if(findEmail) return res.status(400).send({ status: false, message: "Please provide unique Email Id" });
     
     if (!phone) return res.status(400).send({ status: false, message: "Please provide Phone" });
-    if (!isValidPhone(phone)) return res.status(400).send({ status: false, message: "Please provide Phone" });
+    if (!isValidPhone(phone)) return res.status(400).send({ status: false, message: "Please provide valid phone number "});
     
     const findPhone =  await userModel.findOne({phone : phone})
     if(findPhone) return res.status(400).send({ status: false, message: "Please provide unique Phone" });
 
     if (!password) return res.status(400).send({ status: false, message: "Please provide Password" });
-    if (!isValidPassword(password)) return res.status(400).send({ status: false, message: "Please provide Password" });
+    if (!isValidPassword(password)) return res.status(400).send({ status: false, message: "Please provide valid Password" });
     
     const salt = await bcrypt.genSalt(10);
     const secPass = await bcrypt.hash(password, salt);
@@ -53,13 +54,13 @@ const createUser = async function (req, res) {
       }else if (shipping) {
         const { street, city, pincode } = shipping;
         if (!street) return res.status(400).send({ status: false, message: "Please provide street" });
-        if (!isValidString(street)) return res.status(400).send({ status: false, message: "Please provide Street" });
+        if (!isValidString(street)) return res.status(400).send({ status: false, message: "Please provide valid Street" });
         
         if (!city) return res.status(400).send({ status: false, message: "Please provide city" });
-        if (!isValidString(city) || !isValidName(city)) return res.status(400).send({ status: false, message: "Please provide city" });
+        if (!isValidString(city) || !isValidName(city)) return res.status(400).send({ status: false, message: "Please provide valid city" });
 
         if (!pincode) return res.status(400).send({ status: false, message: "Please provide pincode" });
-        if (!isValidPincode(pincode)) return res.status(400).send({ status: false, message: "Please provide Pincode" });
+        if (!isValidPincode(pincode)) return res.status(400).send({ status: false, message: "Please provide valid Pincode" });
       
       }
 
@@ -69,13 +70,13 @@ const createUser = async function (req, res) {
       if (billing) {
         const { street, city, pincode } = billing;
         if (!street) return res.status(400).send({ status: false, message: "Please provide street" });
-        if (!isValidString(street))  return res.status(400).send({ status: false, message: "Please provide Street" });
+        if (!isValidString(street))  return res.status(400).send({ status: false, message: "Please provide valid Street" });
         
         if (!city) return res.status(400).send({ status: false, message: "Please provide city" });
-        if (!isValidString(city) || !isValidName(city)) return res.status(400).send({ status: false, message: "Please provide city" });
+        if (!isValidString(city) || !isValidName(city)) return res.status(400).send({ status: false, message: "Please provide valid city" });
 
         if (!pincode) return res.status(400).send({ status: false, message: "Please provide pincode" });
-        if (!isValidPincode(pincode)) return res.status(400).send({ status: false, message: "Please provide Pincode" });
+        if (!isValidPincode(pincode)) return res.status(400).send({ status: false, message: "Please provide valid Pincode" });
       
       }
     }
