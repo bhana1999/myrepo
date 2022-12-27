@@ -62,7 +62,7 @@ const createOrder = async function (req, res) {
         { new: true }
       );
   
-      return res.status(201).send({ status: true, message: "Success", data: finalData,updateOrder});
+      return res.status(201).send({ status: true, message: "Success", data: finalData});
     } catch (error) {
       return res.status(500).send({ status: false, message: error.message });
     }

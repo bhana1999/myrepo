@@ -13,18 +13,24 @@ const createProduct = async function(req,res){
           availableSizes,installments,isFreeShipping} = data
 
 
-        if(Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Please provide data" });
+        if(Object.keys(data).length == 0)
+         return res.status(400).send({ status: false, message: "Please provide data" });
 
-        if(!files) return res.status(400).send({ status: false, message: "Please provide Product Image" });
+        if(files.length==0)
+         return res.status(400).send({ status: false, message: "Please provide Product Image" });
         if (files && files.length > 0) {
           if (files.length > 1) return res.status(400).send({ status: false, message: "You can't enter more than one file for Update!" })
           let uploadedURL = await getImage(files)
           data.productImage = uploadedURL
         }
 
-        if(!title) return res.status(400).send({ status: false, message: "Please provide Title" });
+        if(!title) 
+        return res.status(400).send({ status: false, message: "Please provide Title" });
         if(!isValidString(title) || !isValidName(title)) return res.status(400).send({status : false , message :"please provide valid title"})
         
+        let duplicateTitle = await productModel.findOne({title})
+        if(duplicateTitle)
+        return res.status(400).send({status:false,message: " Title is already exist"})
         if (!description) return res.status(400).send({ status: false, message: "Please provide description" });
         if(!isValidString(description)) return res.status(400).send({status : false , message :"please provide valid description"})
 
@@ -37,12 +43,15 @@ const createProduct = async function(req,res){
         // if (!currencyFormat) return res.status(400).send({ status: false, message: "Currency Format is required!" });
         // if (currencyFormat != "₹") return res.status(400).send({status: false, message: "Please provide the currencyformat as `₹`!",})
 
-        if (!availableSizes) return res.status(400).send({ status: false, message: "Please provide availableSizes" });
+        if (!availableSizes) 
+        return res.status(400).send({ status: false, message: "Please provide availableSizes" });
+        
         availableSizes = availableSizes.split(",").map((item) => item.trim());
-        for (let i = 0; i < availableSizes.length; i++) {
-          if(!isValidAvailableSizes(availableSizes[i])) return res.status(400).send({ status: false, message: "Please provide size from S, XS, M, X, L, XXL, XL" });
-        }
 
+        let sizes =   ["S", "XS", "M", "X", "L", "XXL", "XL"]
+        for (let i = 0; i < availableSizes.length; i++) {
+          if(!sizes.includes(availableSizes[i])) return res.status(400).send({ status: false, message: "Please provide size from S, XS, M, X, L, XXL, XL" });
+        }
         if(installments){
           if(!isValidNumbers(installments)) return res.status(400).send({status :  false , message : "please provid valid Installment"})
         }
@@ -123,10 +132,10 @@ const getproductById = async function (req, res) {
 
     if (!productId) return res.status(400).send({ msg: "please input product ID" });
     if (!isValidObjectId(productId)) return res.status(400).send({ status: false, msg: "productId is not valid" })
+ 
 
-    const product = await productModel.findOne({_id: productId,isDeleted: false,});
-
-    if (!product) return res.status(404).send({ msg: "no product found / already deleted" })
+    const product = await productModel.findOne({_id: productId,isDeleted: false,})
+    if (!product) return res.status(404).send({ msg: "no product found" })
 
     return res.status(200).send({ status: true,message : "Success", data: product });
   } catch (err) {
