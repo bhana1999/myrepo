@@ -1,11 +1,9 @@
 const orderModel = require("../model/orderModel")
 const cartModel = require("../model/cartModel")
 const userModel = require("../model/userModel")
-
-const {isValidName,isValidEmail,isValidObjectId,isValidString,isValidAvailableSizes,
-    isValidFile,isValidNumbers,isValidPhone,isValidPrice,isValidPassword,isValidPincode,
-  } = require("../validation/validator");
 const productModel = require("../model/productModel");
+const {isValidObjectId, isValidString} = require("../validation/validator");
+
 
 
  const createOrder = async function (req, res) {
@@ -103,10 +101,7 @@ const productModel = require("../model/productModel");
 
       
       const order = await orderModel.findOneAndUpdate(
-        {_id : orderId , isDeleted : false , cancellable : true},
-        data,
-        {new : true}
-      )
+        {_id : orderId , isDeleted : false , cancellable : true}, data, {new : true})
       if(!order) 
       return res.status(404).send({status : false , message :  "order not found"})
 
