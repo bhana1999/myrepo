@@ -55,7 +55,7 @@ const productModel = require("../model/productModel");
   
       let finalData = await orderModel.create(obj);
   
-      const updateOrder = await cartModel.findOneAndUpdate({ userId },
+     const updateOrder = await cartModel.findOneAndUpdate({ userId },
         { $set: { items: [], totalItems: 0, totalPrice: 0 } },
         { new: true }
       );
