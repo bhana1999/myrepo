@@ -39,11 +39,13 @@ const createUser = async function (req, res) {
     if (!password) return res.status(400).send({ status: false, message: "Please provide Password" });
     if (!isValidPassword(password)) return res.status(400).send({ status: false, message: "Please provide valid Password" });
     
+    //password hashing
     const salt = await bcrypt.genSalt(10);
     const secPass = await bcrypt.hash(password, salt);
-         data.password = secPass;
+    data.password = secPass;
+
     if(!address){
-    return res.status(400).send({status:false,message:"please provide address"})
+      return res.status(400).send({status:false,message:"please provide address"})
     }else if(address){
       address = JSON.parse(address);
       data.address = address;
