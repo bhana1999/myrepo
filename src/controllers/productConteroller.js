@@ -158,8 +158,9 @@ let updateProduct = async function (req, res) {
       if (!isValidObjectId(productId)) return res.status(400).send({ status: false, msg: "Product-id is not valid!" });
       if (title) {
         if(!isValidString(title) || !isValidName(title)) return res.status(400).send({status : false , message :"please provide valid title"})
+        
         const uniquetitle = await productModel.findOne({ title: title });
-        if (uniquetitle) return res.status(409).send({ status: false, message: "title is already present" });
+        if (uniquetitle) return res.status(400).send({ status: false, message: "title is already present" });
       }
   
       if (description) {
@@ -193,7 +194,7 @@ let updateProduct = async function (req, res) {
       }
 
       const CheckProduct = await productModel.findOne({_id :productId ,isDeleted : false});
-      if (!CheckProduct) return res.status(404).send({ status: false, message: "Product not found " });
+      if (!CheckProduct) return res.status(404).send({ status: false, message: "Product not found or product is already deleted " });
       
       const updateProduct = await productModel.findOneAndUpdate(
         { _id: productId ,isDeleted : false},
@@ -209,8 +210,6 @@ let updateProduct = async function (req, res) {
         $push : {availableSizes : availableSizes}},
         { new: true }
       );
-
-      if (!updateProduct) return res.status(400).send({ status: false, message: "product is already deleted" });
 
       return res.status(200).send({status: true,message: "Success",data: updateProduct,});
     } catch (error) {
