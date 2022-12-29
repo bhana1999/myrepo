@@ -26,20 +26,21 @@ const createCart = async function(req,res){
       if(!productId) return res.status(400).send({status : false , message : "please  provide productId "})
       if (!isValidObjectId(productId)) return res.status(400).send({ status: false, message: `${productId} is invalid` });
       
-      const product = await productModel.findOne({ _id : productId , isDeleted : false})
-      let totalPrice = product.price * quantity
-      if(!product) return res.status(404).send({status : false , message : "product not found "})
-    if (quantity ) {
-      if (!isValidNumbers(quantity)) {
-          return res.status(400).send({ status: false, message: "Quantity is not Valid" })
-      }
-  }
-     if(!quantity) {
+      if (quantity) {
+        if (!isValidNumbers(quantity)) {
+            return res.status(400).send({ status: false, message: "Quantity is not Valid" })
+        }
+      }else{
         quantity = 1
       }
 
-      let cartFind = await cartModel.findOne({ userId : userId })
+      const product = await productModel.findOne({ _id : productId , isDeleted : false})
+      let totalPrice = product.price * quantity
 
+      if(!product) return res.status(404).send({status : false , message : "product not found "})
+
+      let cartFind = await cartModel.findOne({ userId : userId })
+      
       if(!cartFind) {
           let items = [ {
               productId: productId,

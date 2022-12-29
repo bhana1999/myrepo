@@ -14,7 +14,7 @@ const productSchema = new mongoose.Schema(
       },
     price: { 
       type: Number,
-       required: true
+      required: true
        },
     currencyId: { 
       type: String, 
@@ -48,7 +48,7 @@ const productSchema = new mongoose.Schema(
     },
     deletedAt: { 
       type: Date,
-       default: null 
+      default: null 
       },
     isDeleted: { 
       type: Boolean, 
