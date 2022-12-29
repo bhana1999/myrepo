@@ -119,19 +119,20 @@ const loginUser = async function (req, res) {
           "lithiumproject5",
           {
             expiresIn: "72h",
-          }
-        );
+         }
+       );
         res.setHeader("x-api-key", token);
 
         return res.status(201).send({status: true,message: "User login successfull",data: { userId: checkEmail._id, token: token },});
-      } else {
+     } else {
         return res.status(401).send({ status: false, message: "Incorrect password or email" });
-      }
+    }
     });
-  } catch (err) {
+ } catch (err) {
     res.status(500).send({ staus: false, message: err.message });
   }
 };
+
 
 //====================getapi=====================================================
 const getUser = async function (req, res) {
@@ -222,12 +223,16 @@ const UpdateUser = async(req,res)=>{
   }
 
   let updateUser = await userModel.findOneAndUpdate({ _id: userId }, data, { new: true })
-      if (!updateUser) { return res.status(200).send({ status: true, message: "User not exist with this UserId." }) }
+      if (!updateUser) { return res.status(404).send({ status: true, message: "User not exist with this UserId." }) }
       return res.status(200).send({ status: true, message: "User profile updated", data: updateUser })
 
   } catch (error) {
       return res.status(500).send({ status: false, message: error.message })
+
   }
 }
+
+
+
 
 module.exports = { createUser, loginUser, getUser, UpdateUser };

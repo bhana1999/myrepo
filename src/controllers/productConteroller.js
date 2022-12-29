@@ -159,7 +159,7 @@ let updateProduct = async function (req, res) {
       if (title) {
         if(!isValidString(title) || !isValidName(title)) return res.status(400).send({status : false , message :"please provide valid title"})
         const uniquetitle = await productModel.findOne({ title: title });
-        if (uniquetitle) return res.status(409).send({ status: false, message: "title is already present" });
+        if (uniquetitle) return res.status(400).send({ status: false, message: "title is already present" });
       }
   
       if (description) {
