@@ -1,36 +1,45 @@
 import React from "react";
+import "./App.css";
 
+  
 class App extends React.Component{
-    constructor(){
-        super();
-        this.state={
-            input:'',
-            showParagraph:false,
-        };
+  constructor(){
+      super();
+      this.state ={
+          Count:0
+      }
+  }
+  increaseCount(){
+    this.setState({
+      Count: this.state.Count +1
+    })
+  }
+  decreaseCount(){
+    this.setState({
+      Count: this.state.Count -1
+    })
+  }
 
-    }
-    render(){
-        return(
-            <div>
-                <textarea
-                value={this.state.input}
-                onChange={(e)=> this.setState({input:e.target.value})}
-                />
-                <br/>
-                <button
-                   onClick ={() => {
-                        this.setState({showParagraph:!this.state.showParagraph})
-                    }}
-                    >
-                    Display in UpperCase
-                </button>
-                {this.state.showParagraph && <p>{this.state.input.toUpperCase()}
-                    </p>}
-            </div>
-        )
-    }
-   
+render() {
+  return(
+    <div className="ABC">
+      <h1>Assigment</h1>
+    <p> Count = {this.state.Count} </p>
+    <button onClick={
+      ()=>{
+        this.increaseCount();
+      }
+    }>+ Increase</button>
+    <button onClick={
+      () =>{
+        this.decreaseCount()
+      }
+    }>- Decrease</button>
+    
+
+    </div>
+  )
 }
-
+}
 
 export default App;
