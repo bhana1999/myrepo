@@ -5,20 +5,34 @@ const ObjectId = mongoose.Schema.Types.ObjectId
 
 
 const userSchema = new mongoose.Schema({
-    name: { 
-        type: String, 
-        required: true 
-    },
-    location: { 
-        type: String, 
+    username: {
+        type: String,
         required: true
-     },
-     
-    verified: { 
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+
+    password: {
+        type: String,
+        required: true,
+        unique: true,
+        minLen:8,
+        maxLen:15,
+        trim:true
+    },
+    mobile: {
         type: Boolean,
-         required: true
-         }
+        required: true
+        
+    },
+    address: {
+        type: String,
+
+    }
 }, { timestamps: true });
 
 
-module.exports = mongoose.model("userr" , userSchema)
+module.exports = mongoose.model("userr", userSchema)
