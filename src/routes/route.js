@@ -1,22 +1,23 @@
-const express = require("express")// Requiring express framework.
+const express = require("express") // Requiring express framework.
 const router = express.Router()
-const eventpagecontroller = require("../controllers/eventpagecontroller")
+const NFTscontroller = require("../controllers/NFTscontroller") //importing controller
+const{authentication}=require("../middilware/middilware") //importing middleware file
 
 
-//--------------------API for Create eventpage----------------------------------------------//
-router.post("/createeventpage", eventpagecontroller.createeventpage)
+//--------------------API for Create NFTs----------------------------------------------//
+router.post("/createNFTs", NFTscontroller.createNFTs)
 
-//-------------------API for get/read particular eventpage---------------------------------------//
-router.get("/eventpage/:eventpageId", eventpagecontroller.geteventById)
+//-------------------API for get  particular NFTs---------------------------------------//
+router.get("/NFTS/:NFTSId",authentication, NFTscontroller.getNFTsById)
 
-//------------------API for get/read All eventpage---------------------------------------------//
-router.get("/events", eventpagecontroller.geteventpage);
+//------------------API for get/read All NFTs---------------------------------------------//
+router.get("/NFTs",authentication, NFTscontroller.getNFTs);
 
-//------------------API for deleting particular eventpage-------------------------------------//
-router.delete("/event/:eventpageId",  eventpagecontroller.deleteeventpage)
+//------------------API for deleting particular NFTs-------------------------------------//
+router.delete("/NFTs/:NFTsId", authentication, NFTscontroller.deleteNFTs)
 
-//-----------------API for Updating particular eventpage-----------------------------------//
-router.put("/updatedeventpage/:eventpageId", eventpagecontroller.Updateeventpage)
+//-----------------API for Updating particular NFTs-----------------------------------//
+router.put("/updatedNFTs/:NFTsId", authentication,NFTscontroller.UpdateNFTs)
 
 
 module.exports = router
